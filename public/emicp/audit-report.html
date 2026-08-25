@@ -1,0 +1,1345 @@
+<title>تدقيق ورك فلو EMICP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --ground:      #f6f7f9;
+    --panel:       #ffffff;
+    --panel-sunk:  #eef1f5;
+    --ink:         #16202b;
+    --ink-soft:    #4a5b6d;
+    --ink-faint:   #7d8c9c;
+    --line:        #dce2e9;
+    --line-strong: #c3ccd7;
+    --accent:      #a8541f;
+    --accent-soft: #f2e6dc;
+
+    --crit:        #b3261e;
+    --crit-bg:     #fbe9e7;
+    --high:        #b1620c;
+    --high-bg:     #fbefdf;
+    --med:         #7d6a12;
+    --med-bg:      #f7f2dc;
+    --low:         #3f6570;
+    --low-bg:      #e6eef0;
+    --note:        #4c5c8a;
+    --note-bg:     #e8ebf5;
+
+    --shadow: 0 1px 2px rgba(22, 32, 43, .06), 0 8px 24px -16px rgba(22, 32, 43, .28);
+
+    --f-display: "Reem Kufi", "Segoe UI", system-ui, sans-serif;
+    --f-body: "IBM Plex Sans Arabic", "Segoe UI", system-ui, sans-serif;
+    --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #10161d;
+      --panel:       #171f28;
+      --panel-sunk:  #1e2833;
+      --ink:         #e6ecf2;
+      --ink-soft:    #a8b7c6;
+      --ink-faint:   #7a8896;
+      --line:        #2a3642;
+      --line-strong: #3a4856;
+      --accent:      #dd8f56;
+      --accent-soft: #33241a;
+
+      --crit:        #ff8a80;
+      --crit-bg:     #35191a;
+      --high:        #f0aa5c;
+      --high-bg:     #33251494;
+      --med:         #d8c766;
+      --med-bg:      #2c2814;
+      --low:         #8fc0cc;
+      --low-bg:      #17272c;
+      --note:        #a5b2dd;
+      --note-bg:     #1c2133;
+
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:      #10161d;
+    --panel:       #171f28;
+    --panel-sunk:  #1e2833;
+    --ink:         #e6ecf2;
+    --ink-soft:    #a8b7c6;
+    --ink-faint:   #7a8896;
+    --line:        #2a3642;
+    --line-strong: #3a4856;
+    --accent:      #dd8f56;
+    --accent-soft: #33241a;
+
+    --crit:        #ff8a80;
+    --crit-bg:     #35191a;
+    --high:        #f0aa5c;
+    --high-bg:     #332514;
+    --med:         #d8c766;
+    --med-bg:      #2c2814;
+    --low:         #8fc0cc;
+    --low-bg:      #17272c;
+    --note:        #a5b2dd;
+    --note-bg:     #1c2133;
+
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.75;
+    direction: rtl;
+    text-align: right;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 96px;
+  }
+
+  code, .mono, .ref {
+    font-family: var(--f-mono);
+    direction: ltr;
+    unicode-bidi: isolate;
+    font-size: .87em;
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    border-bottom: 2px solid var(--ink);
+    padding: 56px 0 22px;
+    margin-bottom: 34px;
+  }
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+    direction: ltr;
+    text-align: right;
+  }
+  .masthead h1 {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(30px, 5.5vw, 46px);
+    line-height: 1.25;
+    margin: 0 0 12px;
+    text-wrap: balance;
+    letter-spacing: -.01em;
+  }
+  .masthead p {
+    margin: 0;
+    color: var(--ink-soft);
+    max-width: 62ch;
+    font-size: 16px;
+  }
+  .meta-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 26px;
+    margin-top: 22px;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+  }
+  .meta-strip b { color: var(--ink-soft); font-weight: 500; }
+
+  /* ---------- severity ledger ---------- */
+  .ledger {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .tally {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 14px 16px 13px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .tally::before {
+    content: "";
+    position: absolute;
+    inset-inline-end: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--tone, var(--line-strong));
+  }
+  .tally .n {
+    font-family: var(--f-mono);
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--tone, var(--ink));
+    font-variant-numeric: tabular-nums;
+    display: block;
+  }
+  .tally .lbl {
+    display: block;
+    margin-top: 7px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .tally .sub {
+    display: block;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    margin-top: 2px;
+  }
+  .t-crit { --tone: var(--crit); }
+  .t-high { --tone: var(--high); }
+  .t-med  { --tone: var(--med); }
+  .t-low  { --tone: var(--low); }
+  .t-note { --tone: var(--note); }
+
+  /* ---------- filter bar ---------- */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding: 12px 0 26px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 34px;
+  }
+  .filters .fl {
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-left: 6px;
+    font-family: var(--f-mono);
+    letter-spacing: .05em;
+  }
+  .chip {
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--panel);
+    color: var(--ink-soft);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 4px 15px;
+    cursor: pointer;
+    transition: background .13s, color .13s, border-color .13s;
+  }
+  .chip:hover { border-color: var(--ink-faint); }
+  .chip[aria-pressed="true"] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--ground);
+  }
+  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- sections ---------- */
+  h2 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 25px;
+    margin: 54px 0 6px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    text-wrap: balance;
+  }
+  h2 .sec-id {
+    font-family: var(--f-mono);
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+    direction: ltr;
+  }
+  .sec-note {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 66ch;
+    font-size: 14.5px;
+  }
+
+  /* ---------- finding ---------- */
+  .finding {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    position: relative;
+    padding: 16px 22px 17px 18px;
+  }
+  .finding::before {
+    content: "";
+    position: absolute;
+    inset-inline-end: 0;
+    top: -1px;
+    bottom: -1px;
+    width: 4px;
+    background: var(--tone);
+    border-radius: 0 3px 3px 0;
+  }
+  .finding.hide { display: none; }
+
+  .f-head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px 11px;
+    margin-bottom: 8px;
+  }
+  .f-id {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-faint);
+    direction: ltr;
+    letter-spacing: .04em;
+  }
+  .sev {
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 1px 9px;
+    border-radius: 3px;
+    background: var(--tone-bg);
+    color: var(--tone);
+    white-space: nowrap;
+  }
+  .f-title {
+    font-weight: 600;
+    font-size: 16px;
+    flex: 1 1 260px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  .rows { display: grid; gap: 7px; }
+  .row {
+    display: grid;
+    grid-template-columns: 74px 1fr;
+    gap: 12px;
+    align-items: start;
+    font-size: 14px;
+  }
+  .row > dt {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    color: var(--ink-faint);
+    padding-top: 4px;
+    border-inline-end: 2px solid var(--line);
+    padding-inline-end: 10px;
+    text-align: left;
+  }
+  .row > dd { margin: 0; color: var(--ink-soft); }
+  .row > dd.fix { color: var(--ink); }
+  .row > dd b { color: var(--ink); font-weight: 600; }
+
+  pre.snip {
+    font-family: var(--f-mono);
+    direction: ltr;
+    text-align: left;
+    background: var(--panel-sunk);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 9px 12px;
+    margin: 6px 0 0;
+    font-size: 12.5px;
+    line-height: 1.65;
+    overflow-x: auto;
+    color: var(--ink);
+  }
+
+  .f-crit { --tone: var(--crit); --tone-bg: var(--crit-bg); }
+  .f-high { --tone: var(--high); --tone-bg: var(--high-bg); }
+  .f-med  { --tone: var(--med);  --tone-bg: var(--med-bg); }
+  .f-low  { --tone: var(--low);  --tone-bg: var(--low-bg); }
+  .f-note { --tone: var(--note); --tone-bg: var(--note-bg); }
+
+  /* ---------- priority table ---------- */
+  .scroller { overflow-x: auto; margin: 0 0 8px; }
+  table.prio {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 540px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  table.prio th, table.prio td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--line);
+    text-align: right;
+    vertical-align: top;
+  }
+  table.prio thead th {
+    background: var(--panel-sunk);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: .03em;
+    white-space: nowrap;
+  }
+  table.prio tbody tr:last-child td { border-bottom: 0; }
+  table.prio td.num {
+    font-family: var(--f-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-faint);
+    width: 34px;
+  }
+  table.prio td.tag { white-space: nowrap; }
+
+  .callout {
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    border-inline-start: 3px solid var(--accent);
+    border-radius: 3px;
+    padding: 15px 18px;
+    margin: 22px 0 8px;
+    font-size: 14.5px;
+    color: var(--ink);
+  }
+  .callout b { font-weight: 600; }
+
+  footer.end {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 2px solid var(--ink);
+    font-size: 13px;
+    color: var(--ink-faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 24px;
+  }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 0 16px 72px; }
+    .row { grid-template-columns: 1fr; gap: 2px; }
+    .row > dt { border: 0; padding: 0; text-align: right; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">EMICP · Workflow Audit · v41 / Schema 22</p>
+    <h1>تدقيق كامل لسير العمل وتقييم الأخطاء</h1>
+    <p>قراءة سطرية لكامل <code>app.js</code> (‎5,847 سطرًا) على خمسة محاور: تسلسل المراحل، الصلاحيات وفصل المهام، سلامة البيانات والحفظ، حساب المخزون، ومنطق التخطيط. كل بند أدناه متحقَّق منه في الكود الفعلي مع رقم السطر وسيناريو وقوع محدد.</p>
+    <div class="meta-strip">
+      <span><b>التاريخ:</b> ٢٢ آب ٢٠٢٦</span>
+      <span><b>النطاق:</b> app.js · index.html · اختبار ٣٢٠ فحصًا</span>
+      <span><b>الطريقة:</b> مراجعة كود ثابتة — لم يُعدَّل أي ملف</span>
+    </div>
+  </header>
+
+  <section class="ledger">
+    <div class="tally t-crit"><span class="n">16</span><span class="lbl">حرج</span><span class="sub">فقد بيانات أو مال</span></div>
+    <div class="tally t-high"><span class="n">32</span><span class="lbl">عالي</span><span class="sub">كسر تسلسل أو رقم خاطئ</span></div>
+    <div class="tally t-med"><span class="n">22</span><span class="lbl">متوسط</span><span class="sub">تشويش وسلوك مربك</span></div>
+    <div class="tally t-low"><span class="n">7</span><span class="lbl">منخفض</span><span class="sub">تحسينات اتساق</span></div>
+    <div class="tally t-note"><span class="n">3</span><span class="lbl">قرار مقصود</span><span class="sub">ليست أخطاء</span></div>
+  </section>
+
+  <div class="filters">
+    <span class="fl">تصفية:</span>
+    <button class="chip" type="button" data-f="all" aria-pressed="true">الكل ٨٠</button>
+    <button class="chip" type="button" data-f="f-crit" aria-pressed="false">حرج</button>
+    <button class="chip" type="button" data-f="f-high" aria-pressed="false">عالي</button>
+    <button class="chip" type="button" data-f="f-med" aria-pressed="false">متوسط</button>
+    <button class="chip" type="button" data-f="f-low" aria-pressed="false">منخفض</button>
+    <button class="chip" type="button" data-f="f-note" aria-pressed="false">قرارات مقصودة</button>
+  </div>
+
+  <div class="callout">
+    <b>الخلاصة في سطرين:</b> منطق العمل نفسه سليم ومتماسك — التسلسل مبني بعناية والفحوص الثلاثية تعمل. لكن الحراسة تعيش في طبقة العرض لا في المعالجات، والحساب الكمّي يفتقد أساسيات التخطيط (وحدة الشراء، مخزون الأمان، البُعد الزمني)، والحفظ بلا شبكة أمان. أخطر خمسة بنود تتعلق بفقد بيانات صامت وشراء بكمية خاطئة — وكلها قابلة للإصلاح دون إعادة بناء.
+  </div>
+
+  <h2><span class="sec-id">01</span> أولويات الإصلاح</h2>
+  <p class="sec-note">مرتبة بحاصل (أثر × احتمال وقوع)، لا بترتيب ظهورها في الملف.</p>
+  <div class="scroller">
+    <table class="prio">
+      <thead><tr><th>#</th><th>البند</th><th class="tag">الرمز</th><th>لماذا أولًا</th></tr></thead>
+      <tbody>
+        <tr><td class="num">1</td><td>عنصر <code>null</code> واحد يمحو قاعدة البيانات كاملة</td><td class="tag"><code>D1</code></td><td>فقد نهائي بلا رسالة خطأ</td></tr>
+        <tr><td class="num">2</td><td>فشل الحفظ عند امتلاء المساحة صامت مع رسالة نجاح كاذبة</td><td class="tag"><code>D2</code></td><td>كوتيشنان يكفيان لتجاوز الحصة</td></tr>
+        <tr><td class="num">3</td><td>أمر الشراء يُرفع بوحدة الاستهلاك لا بوحدة الشراء</td><td class="tag"><code>L3</code></td><td>طلب ٢٥ ضعف الحاجة من المورد</td></tr>
+        <tr><td class="num">4</td><td>سحب المواد بالتناسب مع الكميات لا حسب الوصفة</td><td class="tag"><code>S3</code></td><td>كل رصيد مادة يصبح خاطئًا</td></tr>
+        <tr><td class="num">5</td><td>حقول الكميات بلا تطبيع رقمي ⇐ <code>NaN</code> يُعرض «0»</td><td class="tag"><code>D3</code></td><td>يُخفي النقص ويُخفي المتاح للبيع</td></tr>
+        <tr><td class="num">6</td><td>الاستهلاك يُقصّ عند الصفر بينما <code>consumed</code> يزيد</td><td class="tag"><code>S1</code></td><td>كميات تضيع من الدفاتر بلا أثر</td></tr>
+        <tr><td class="num">7</td><td>لا مخزون أمان ولا إزاحة زمنية لمدة التوريد</td><td class="tag"><code>G1</code> <code>G2</code></td><td>الشراء دائمًا متأخر وبلا حاجز</td></tr>
+        <tr><td class="num">8</td><td>لا حارس دور في أي معالج نموذج تشغيلي</td><td class="tag"><code>P4</code></td><td>الفصل الوظيفي شكلي فقط</td></tr>
+        <tr><td class="num">9</td><td>بقايا الفواصل العشرية تُجمّد المستند نهائيًا</td><td class="tag"><code>S5</code></td><td>قفل لا مخرج منه + نقص وهمي</td></tr>
+        <tr><td class="num">10</td><td>لا صافي احتياج للمنتج النهائي (المخزون لا يُطرح)</td><td class="tag"><code>G5</code></td><td>إنتاج فائض بحجم الرصيد القائم</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2><span class="sec-id">02</span> ماذا يتغيّر عند الانتقال إلى سيرفر وقاعدة بيانات</h2>
+  <p class="sec-note">النظام اليوم نموذج يعمل من ملف محلي، والخطة نقله إلى دومين وقاعدة بيانات على سيرفر المصنع. هذا التصنيف يجيب عن سؤال واحد: أيّ بند يحلّه الانتقال وحده، وأيّ بند سينتقل معك كما هو؟</p>
+  <div class="scroller">
+    <table class="prio">
+      <thead><tr><th>الطبقة</th><th class="tag">العدد</th><th>البنود</th><th>القرار</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>يحلّه الانتقال وحده</b><br><small>تخزين وهوية</small></td>
+          <td class="tag"><code>10</code> · ١٢٪</td>
+          <td><code>D1</code> <code>D2</code> <code>D3</code> <code>D4</code> <code>D5</code> <code>D6</code> <code>D7</code> <code>D15</code> <code>P8</code> <code>P12</code></td>
+          <td>أجّلها — عدا <code>D1</code> و<code>D2</code> فهما يكلّفانك فقد عمل <b>اليوم</b> وإصلاحهما دقائق</td>
+        </tr>
+        <tr>
+          <td><b>يزداد سوءًا بالانتقال</b><br><small>تعدد مستخدمين + واجهة برمجية</small></td>
+          <td class="tag"><code>9</code> · ١١٪</td>
+          <td><code>P4</code> <code>P5</code> <code>P6</code> <code>P7</code> <code>W5</code> <code>W6</code> <code>W7</code> <code>S4</code> <code>L7</code></td>
+          <td>أصلحها <b>قبل</b> الانتقال — جدول الصلاحيات يصبح مواصفة تفويض الواجهة البرمجية</td>
+        </tr>
+        <tr>
+          <td><b>ينتقل معك كما هو</b><br><small>منطق عمل وحساب</small></td>
+          <td class="tag"><code>61</code> · ٧٦٪</td>
+          <td>كل قسمَي حساب المخزون والتخطيط، والفجوات المنهجية، ومعظم التسلسل والاستيراد</td>
+          <td>أصلحها الآن — تكلفتها تتضاعف بعد امتلاء قاعدة البيانات بسجلات مبنية على الصيغة الخاطئة</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <b>القاعدة الحاكمة:</b> قاعدة البيانات لا تعرف أن كمية أمر الشراء تُقسَم على معامل التحويل، ولا أن السحب يُوزَّع بالوصفة، ولا أن المخزون الاستراتيجي حدّ أدنى واجب. تصحيح هذه الصيغ اليوم = تعديل دالة؛ وتصحيحها بعد الانتقال = تعديل دالة + ترحيل بيانات + تفسير أمام المصنع لماذا تغيّرت الأرقام.
+  </div>
+
+  <!-- ============ 03 WORKFLOW ============ -->
+  <h2><span class="sec-id">03</span> تسلسل المراحل والانتقالات</h2>
+  <p class="sec-note">المسار المقصود: فوركاست ← فحص جاهزية ثلاثي ← رد الإنتاج ← قبول المبيعات ← تثبيت ← احتياجات ← تأكيد رصيد ← شراء ← موافقة مالية ← استلام ← خطط أسبوعية ← إنتاج فعلي ← منتج نهائي ← بيع.</p>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">W1</span><span class="sev">حرج</span><span class="f-title">قبول المبيعات لرد الإنتاج يثبّت المستند متجاوزًا رفض المشتريات للتوريد</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5763</code> — <code>accept-production-feedback</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">if (!acceptForecast || acceptForecast.status !== "production_feedback") { ...return; }
+acceptForecast.status = "fixed";</pre></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>المشتريات تختار «تعذر التوريد» ⇐ الإنتاج يُمنع من التثبيت فيرسل أرقامًا معدلة ⇐ المبيعات تضغط «قبول أرقام الإنتاج» ⇐ المستند يُثبَّت رغم استحالة التوريد. مسار التثبيت الآخر (<code>app.js:4796</code>) يفحص هذا الشرط فعلًا — الفحص موجود في نصف واحد من البوابة.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">انسخ بوابة السطر 4796: ارفض التثبيت إذا <code>supplyFeasibility.confirmed === false</code> أو <code>readinessStale</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">W2</span><span class="sev">حرج</span><span class="f-title">مستند مثبت بلا احتياجات مواد يعلق إلى الأبد بلا أي إجراء يحرّكه</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:907</code> — <code>productMaterialsReady</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">return requirements.length &gt; 0 &amp;&amp; requirements.every(...);   // صفر احتياجات ⇒ false للأبد</pre></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>لا مواد أولية فعّالة (لم تُعرَّف بعد أو عُطِّلت) ⇐ الإنتاج يثبّت عبر الطريق السريع في <code>productionReplyAllowed</code> (<code>app.js:968</code>) ⇐ خطط أسبوعية ⇐ اعتماد كامل ⇐ ثم <code>pendingProductionEntries</code> ترفض كل الصفوف ⇐ «لا توجد تشغيلات جاهزة»، والمستند المثبت لا يُلغى (<code>app.js:5636</code>). طريق مسدود دائم.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">اعتبر «لا مواد مطلوبة» جاهزيةً: <code>requirements.length === 0 ? !state.rawMaterials.some(m =&gt; m.active !== false) : requirements.every(...)</code></dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">W3</span><span class="sev">حرج</span><span class="f-title">لا مسار لإلغاء أو تصحيح استلام مواد خاطئ، والالتزام يُقفل حتى عند استلام صفر</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4338</code> — <code>saveReceiptForm</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">if (!validNumber(rrQtyRaw, true)) { ... }   // يسمح بالصفر
+receipt.status = "received";
+receivedCommitment.status = "received";      // بلا شرط على الكمية
+receiptMaterial.onHand += receipt.received;</pre></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>كتابة 10,000 بدل 100 ⇐ الرصيد يقفز ويُعمَّم على كل خطط الكود ⇐ لا يوجد <code>undo-receipt</code> ⇐ الالتزام صار <code>received</code> فلا يقبل الإلغاء ⇐ التصحيح الوحيد إعادة كتابة الرصيد يدويًا بلا أي أثر رابط. وبإدخال صفر يُقفل الالتزام كـ«مستلم» ولم يصل شيء.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">حالة <code>partially_received</code> عند <code>received &lt; qty</code>، وإجراء <code>undo-receipt</code> يعكس الرصيد و<code>inbound</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">W4</span><span class="sev">عالي</span><span class="f-title">إلغاء الفوركاست يترك احتياجاته وأوامر شرائه ومهامه يتيمة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5633</code> — <code>cancel-forecast</code></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>مستند أُدخلت احتياجاته وصدر عليها أمر شراء ثم أُلغي: سجلات <code>state.materials</code> تبقى تنافس المستندات الحيّة على نفس الرصيد الفيزيائي في <code>materialAllocations</code>، وتبقى في <code>purchasableShortages</code> فتولّد الخطوة 13 للمشتريات، وتبقى غير مؤكدة فتولّد الخطوة 5 للمخزن إلى الأبد. الالتزام المرتبط يبقى فعّالًا.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">عند الإلغاء: علّم/احذف <code>state.materials</code> بذلك <code>forecastId</code> وألغِ الالتزامات غير المستلمة مع خصم <code>inbound</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">W5</span><span class="sev">عالي</span><span class="f-title">التوزيع اليومي يفرّغ الاعتمادات فتصبح الخطة «معتمدة» و«0/7 وحدة معتمدة» معًا</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:576</code> <code>recomputePlanApproval</code> + <code>app.js:548</code> <code>planUnits</code> + <code>app.js:5185</code> <code>day-form</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">if (plan.status !== "awaiting_approvals") return;   // الحالة تصعد ولا تهبط أبدًا</pre></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>اعتماد الأسابيع W1–W4 ⇐ الحالة <code>approved</code> ⇐ الإنتاج يضغط «توزيع الأيام» (متاح فقط بعد الاعتماد) ⇐ <code>planUnits</code> صارت تُعيد مفاتيح أيام لم يعتمدها أحد ⇐ أزرار الاعتماد مخفية لأنها تشترط <code>awaiting_approvals</code>. حالة يتيمة، والإنتاج الفعلي يمر لأن <code>weeklyPlanApprovedFor</code> تقرأ <code>status</code> فقط.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">بعد حفظ الأيام أعد <code>status = "awaiting_approvals"</code> وفرّغ <code>unitApprovals</code>، أو رحّل اعتماد الأسبوع إلى أيامه.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">W6</span><span class="sev">عالي</span><span class="f-title">نموذج رد الإنتاج لا يعيد فحص الجاهزية عند الحفظ — والنافذة لا تُغلق عند تغيّر البيانات</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4755</code> — الحارس <code>productionReplyAllowed</code> موجود في العارض (1594) وفاتح النافذة (3701) فقط</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>الإنتاج يفتح نافذة الرد ⇐ في تبويب آخر تعدّل المبيعات الكميات فتُضبط <code>readinessStale = true</code> و<code>supplyFeasibility = null</code> ⇐ <code>refresh()</code> لا يستدعي <code>closeDialog()</code> ⇐ الإنتاج يحفظ ⇐ تثبيت بفحص جاهزية بائت.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">أضف <code>if (!productionReplyAllowed(prForecast))</code> قبل التثبيت، وأغلق أي نافذة مفتوحة داخل معالج حدث <code>storage</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">W7</span><span class="sev">عالي</span><span class="f-title">تعديل أسبوع يعيد خطة منفَّذة إلى الاعتماد بعد استهلاك موادها</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5153</code> — <code>week-edit-form</code> بلا فحص دور ولا فحص حالة</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>خطة <code>approved</code> سُجِّل عليها إنتاج فعلي واستُهلكت موادها ⇐ تعديل أسبوع قادم ⇐ <code>status = "awaiting_approvals"</code> ⇐ <code>weeklyPlanApprovedFor</code> تصبح false ⇐ الشهر يختفي من التشغيلات الجاهزة بينما المواد مسحوبة أصلًا.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">امنع التعديل على شهر له <code>producedQty &gt; 0</code>، واشترط <code>status === "awaiting_sales"</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">W8</span><span class="sev">متوسط</span><span class="f-title">قرار «إمكانية التوريد» لا يمكن التراجع عنه بعد «نعم»</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:974</code> — <code>forecastsAwaitingSupplyConfirm</code></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>المستند الذي حصل على <code>confirmed:true</code> يختفي من البطاقة فلا يبقى أي زر لتعديل القرار. المورد يعتذر لاحقًا ⇐ لا مسار في الواجهة لتحويل القرار إلى «تعذر» قبل التثبيت.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">أبقِ المستند في البطاقة مع زر «تعديل القرار» ما دام <code>status === "submitted"</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">W9</span><span class="sev">متوسط</span><span class="f-title">المستند المثبت لا يُعدَّل ولا يُلغى — خطأ رقمي واحد يحكم الدورة كلها</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5636</code> + <code>app.js:3543</code></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>تثبيت 100,000 بدل 10,000 ⇐ لا تعديل ولا إلغاء ⇐ الخطط الأسبوعية والتشغيلات وتغطية طلب الوكلاء تبقى مبنية على الرقم الخاطئ؛ و«تسجيل مشكلة» لا يغيّر أي حالة.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">إجراء <code>revoke-fixed-forecast</code> بموافقة الطرفين يعيد الحالة إلى <code>submitted</code> ويبطل الخطط غير المنفَّذة.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">W10</span><span class="sev">متوسط</span><span class="f-title">القضية المغلقة لا تُفتح مجددًا، وإغلاقها بلا فحص حالة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5789</code> — <code>close-issue</code></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>لا فحص <code>issue.status === "open"</code> ولا وجود لإجراء <code>reopen-issue</code>؛ إعادة الضغط تدهس <code>closedAt</code> وتُلوّث سجل التدقيق، و<code>evidence</code> يُكتب نصًا ثابتًا يوحي بتحقّق لم يحدث.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">افحص الحالة والدور، وأضف إجراء إعادة الفتح.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-low">
+    <div class="f-head"><span class="f-id">W11</span><span class="sev">منخفض</span><span class="f-title">حقول حالة تُكتب ولا تُقرأ أبدًا</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>material.status</code> (1127، 1195، 4308…)، <code>material.productionApproved</code>، <code>plan.approvals</code>، <code>fgReceipt.status</code>، ودالتان معرَّفتان بلا استدعاء: <code>weeklyPlanFullyApproved</code> (535) و<code>nextRequiredStep</code> (1053)</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>كل العارضين يعيدون حساب الحالة محليًا. <code>material.status</code> تحديدًا خطر: توحي بوجود آلة حالات للمادة بينما القرار مشتق دائمًا من <code>stockConfirmed</code> و<code>materialAllocations</code> — أي حارس مستقبلي يُبنى عليها يُبنى على حقل غير موثوق.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">احذف الحقول المشتقة من <code>state</code> واحسبها عند العرض فقط.</dd></div>
+    </dl>
+  </article>
+
+  <!-- ============ 03 PERMISSIONS ============ -->
+  <h2><span class="sec-id">04</span> الصلاحيات وفصل المهام</h2>
+  <p class="sec-note">القاعدة الصارمة المعتمدة: المبيعات لا ترى المواد الأولية ولا التكاليف. النتيجة العامة: حجب التقارير (<code>hideForSales</code>) سليم تمامًا، لكن ثلاثة أزرار في الشريط العلوي تُسقط النموذج الأمني كله.</p>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">P1</span><span class="sev">حرج</span><span class="f-title">مبدّل الدور في الشريط العلوي يمنح أي مستخدم أي دور بنقرتين وبلا كلمة مرور</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:1233</code> (القائمة معروضة لكل دور) + <code>app.js:5405</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">state.role = event.target.value;   // بلا أي فحص للدور الحالي</pre></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>مستخدم مبيعات يختار «المشتريات» فيرى فورًا أسماء الموردين وMOQ والأسعار وقيم أوامر الشراء. هذا يُبطل القاعدة الصارمة كليًا ويُبطل معها كل بنية <code>allowedPages</code> وكل كلمات المرور.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">احصر المبدّل بـ <code>admin</code>، أو أزله وأجبر الخروج وإعادة الدخول.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">P2</span><span class="sev">حرج</span><span class="f-title">بطاقة «الخطوة التالية» تمنح المبيعات دور المشتريات بنقرة واحدة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5504</code> — <code>go-step</code>، والبطاقة محقونة في <code>renderHome</code> لكل دور</dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">state.role = target.getAttribute("data-role") || "sales";
+state.page = target.getAttribute("data-page") || "home";</pre></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>الأزرار تحمل <code>data-role="procurement"</code>. وحتى قبل النقر، نصوص الخطوات نفسها تسرّب للمبيعات عدد أكواد المواد غير المؤكدة (خطوة 5)، وعدد المواد الناقصة الجاهزة للشراء (13)، وعدد المواد تحت الحد الاستراتيجي (19).</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">لا تُسند <code>state.role</code> إطلاقًا — انقل الصفحة فقط إذا <code>canAccess(page)</code>، ورشّح الخطوات إلى دور المستخدم.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">P3</span><span class="sev">عالي</span><span class="f-title">زر «بدء جديد» متاح لكل دور، ويمسح المستخدمين وكلمات المرور والصلاحيات معهم</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5511</code> — <code>reset</code> بلا فحص دور</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd><code>state = clone(defaultState)</code> يستبدل <code>state.users</code> بالحسابات الافتراضية الثمانية <b>بلا كلمات مرور</b>، ويعيد <code>permissions</code> للافتراضي ملغيًا كل ضبط الأدمن. أي مستخدم مبيعات يمحو سنة عمل ويفتح النظام للجميع.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">احصره بـ <code>admin</code>، واستثنِ <code>users</code> و<code>permissions</code> و<code>branding</code> من المسح.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">P4</span><span class="sev">عالي</span><span class="f-title">لا حارس دور في أي معالج نموذج تشغيلي — الحراسة كلها في طبقة العرض</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd>بلا <code>state.role</code>: <code>forecast-form</code> (4695)، <code>production-review-form</code> (4755)، <code>material-form</code> (4804)، <code>stock-form</code> (4894)، <code>commitment-form</code> (4898)، <code>receipt-form</code> (4930)، <code>actual-form</code> (4934)، <code>fg-form</code> (4966)، <code>weekly-plan-form</code> (5045)، <code>weekly-review-form</code> (5113)، <code>week-edit-form</code> (5153)، <code>day-form</code> (5185)، <code>sales-form</code> (5265)، <code>cancel-forecast</code> (5633)، <code>cancel-commitment</code> (5643)، <code>advance-commitment</code> (5775)، <code>accept-production-feedback</code> (5763)، <code>close-issue</code> (5789)</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>مع P1 و P2 يصبح كل هذا قابلًا للتنفيذ بالواجهة المرئية وحدها. والأخطر: <code>addAudit</code> يكتب اسم الدور <b>بالحرف الثابت</b> («الإنتاج»، «المشتريات») لا الدور الفاعل ⇐ سجل التدقيق ينسب الفعل لطرف لم يقم به. النمط الآمن موجود في الملف أصلًا (<code>waste-form</code>، <code>supply-form</code>، <code>finance-po-decision</code>) لكنه غير معمَّم.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">جدول <code>ACTION_ROLES</code> وحارس واحد في رأس مستمعي <code>submit</code> و<code>click</code>، و<code>addAudit(..., roleName(state.role))</code> دائمًا.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">P5</span><span class="sev">عالي</span><span class="f-title">المالية تُنشئ أمر الشراء وتوافق عليه وتُنفّذه بنفسها</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:172</code> (صلاحيات <code>finance</code> تشمل <code>procurement</code>) + <code>app.js:1987</code> (<code>renderCommitmentCard(true)</code> بلا قيد)</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>«التزام جديد» ⇐ «موافقة مالية» (محروسة بشكل صحيح) ⇐ «تأكيد الأوردر وبدء التوريد» (<code>advance-commitment</code> بلا حارس) ⇐ دورة شراء كاملة ينفذها طرف واحد، بينما التعليق في السطر 5778 يزعم «لا تجاوز».</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix"><code>renderCommitmentCard(state.role === "procurement")</code> + حارس دور في <code>advance-commitment</code> و<code>cancel-commitment</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">P6</span><span class="sev">عالي</span><span class="f-title">مخزن المواد الأولية يستطيع إدخال وتعديل وحذف احتياجات الإنتاج</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:170</code> (<code>rmWarehouse</code> تشمل <code>materials</code>) + <code>app.js:1859</code> + <code>app.js:4804</code></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>تفريغ خانات مادة يحذف سجل الاحتياج، أو يُضخّم الكمية. الطرف الذي يؤكد الرصيد هو نفسه الذي يحدد الاحتياج الذي يُقاس عليه النقص — انهيار كامل لفصل المهام في أخطر نقطة.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">اقصر <code>material-form</code> و<code>openMaterialForm</code> على <code>production</code>، وأخفِ الزر عن غيره.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">P7</span><span class="sev">عالي</span><span class="f-title">تبديل صلاحية بلا فحص أدمن — ويمكن قفل لوحة التحكم نهائيًا</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5795</code> — <code>toggle-permission</code>، المعالج الوحيد في كتلة الأدمن بلا فحص <code>admin</code></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd><code>role</code> و<code>pageKey</code> مأخوذان من الـDOM بلا قائمة بيضاء. سحب صفحة <code>admin</code> من دور الأدمن ممكن، و<code>normalizeLoadedState</code> تُعيد <code>home/reports/languages/agentMaster/executive</code> فقط ولا تُعيد <code>admin</code> أبدًا ⇐ لا أحد يفتح لوحة التحكم مرة أخرى إلا بمسح التخزين.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">فحص <code>admin</code> + تحقق أن <code>pageKey ∈ roleChoices[role]</code> + امنع سحب <code>admin</code> من <code>permissions.admin</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">P8</span><span class="sev">عالي</span><span class="f-title">إيقاف المستخدم أو حذفه لا يقطع جلسته الحالية</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:685</code> — <code>syncStateFromStorage</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">latest.role = currentView.role; latest.loggedIn = currentView.loggedIn;   // يُعيد فرض الجلسة القديمة</pre></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd><code>activeUsers()</code> يمنع الموقوف من لوحة الدخول فقط. حدث <code>storage</code> يزامن البيانات ثم يُعيد فرض الدور والجلسة ⇐ الموقوف يبقى عاملًا بكامل صلاحياته حتى يخرج طوعًا.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">بعد المزامنة: إن لم يوجد <code>currentUser()</code> فعّال ⇐ <code>loggedIn = false</code> و<code>renderLogin()</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">P9</span><span class="sev">متوسط</span><span class="f-title">صفحتان خارج قائمة الحماية الصلبة للمبيعات</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:139</code> — <code>protectedPages.sales</code> لا تشمل <code>audit</code> ولا <code>executive</code></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>سجل التدقيق يحوي «ضبط المخزون الاستراتيجي لمادة X» وأسماء الموردين؛ وخارطة الأمر التنفيذية (<code>app.js:2603</code>) تعرض جدول مواد كاملًا وجدول أوامر شراء. يكفي أن تُضاف الصفحة إلى <code>permissions.sales</code> — عبر P7 أو التخزين — لتصبح مرئية بلا حاجز.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">أضف <code>"audit"</code> و<code>"executive"</code> و<code>"execution"</code> إلى <code>protectedPages.sales</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">P10</span><span class="sev">متوسط</span><span class="f-title">قالب المواد ليس قالبًا — يُصدّر الدليل كاملًا بالأسعار، وبلا فحص دور</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5591</code> + <code>app.js:3174</code></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>إن وُجدت مواد، يُصدَّر <code>state.rawMaterials</code> كاملًا (المورد، بلد المنشأ، السعر التقريبي، العملة، MOQ). الزر معروض في صفحة إدارية لكن المعالج عالمي وبلا حارس — بخلاف <code>delete-master</code> المحروس فعلًا.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">فحص <code>admin</code>، وخيار «قالب فارغ» منفصل عن «تصدير الدليل».</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">P11</span><span class="sev">متوسط</span><span class="f-title">تنقيح نص القضايا للمبيعات ينهار عند فتح التفاصيل</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:2195</code> (البطاقة تنقّح <code>impact</code>) مقابل <code>app.js:4275</code> (النافذة تعرضه خامًا)</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>قضية نصها «نقص مادة السكر 4 طن» تُنقَّح في القائمة إلى «عامل تشغيلي» وتظهر كاملة عند الضغط على «فتح».</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">دالة <code>redactForSales(text)</code> واحدة تُستعمل في <code>impact</code> و<code>action</code> في الموضعين.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">P12</span><span class="sev">متوسط</span><span class="f-title">بصمة كلمة المرور ضعيفة، ولا حدّ لمحاولات الدخول</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:712</code> — <code>hashPassword</code> (djb2 32-bit) + <code>app.js:4413</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">return "h" + (hash &gt;&gt;&gt; 0).toString(36) + value.length;   // بلا ملح، ولاحقة الطول تكشف طول الكلمة</pre></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>الحد الأدنى 4 محارف ولا محاولات محدودة ولا تأخير — تخمين لا نهائي في لوحة الدخول، والتصادمات ضمن نفس الطول واردة فتُقبل كلمة مرور مختلفة. وتفريغ كلمة مرور أدمن مسموح ⇐ دخول بلا كلمة مرور. <b>ملاحظة:</b> هذا مقبول في نموذج تجريبي محلي، لكنه لا ينتقل إلى الإنتاج كما هو.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">للإنتاج: تقييم الهوية على الخادم. للنموذج: <code>crypto.subtle</code> بملح + عداد محاولات + منع تفريغ كلمة مرور الأدمن.</dd></div>
+    </dl>
+  </article>
+
+  <!-- ============ 04 DATA ============ -->
+  <h2><span class="sec-id">05</span> سلامة البيانات والحفظ والترحيل</h2>
+  <p class="sec-note">كل الحالة في مفتاح <code>localStorage</code> واحد بحجم قد يبلغ ميغابايتات. الملف كله يحتوي ثلاث كتل <code>try</code> فقط، ولا حاجز أخطاء حول <code>renderPage()</code>.</p>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">D1</span><span class="sev">حرج</span><span class="f-title">عنصر <code>null</code> واحد في أي مجموعة يمسح قاعدة البيانات كاملة بلا إنذار</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:667</code> — <code>loadState</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">try { return normalizeLoadedState(JSON.parse(saved)); }
+catch (error) { return clone(defaultState); }   // يبتلع كل شيء</pre></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>الترحيل يضمن أن المجموعة مصفوفة لكن لا يضمن أن عناصرها ليست <code>null</code>؛ أول <code>item.packingBom</code> على عنصر <code>null</code> يرمي <code>TypeError</code> ⇐ الشاشة تظهر فارغة ⇐ أول <code>saveState()</code> (يقع تلقائيًا في <code>addAudit</code> عند أول إجراء) يكتب الحالة الفارغة فوق الأصلية. <b>فقد نهائي بلا رسالة واحدة.</b></dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix"><code>stateCollections.forEach(k =&gt; result[k] = result[k].filter(Boolean));</code> + احفظ نسخة <code>STORAGE_KEY + "-corrupt-" + …</code> داخل <code>catch</code> قبل العودة للافتراضي.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">D2</span><span class="sev">حرج</span><span class="f-title">فشل الحفظ عند امتلاء المساحة صامت تمامًا، مع رسالة نجاح كاذبة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:680</code> — <code>saveState</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+catch (error) { /* local prototype can still run */ }</pre></dd></div>
+      <div class="row"><dt>الحساب</dt><dd>الكوتيشن حتى 1.5MB يُخزَّن Base64 (تضخّم ‎1.37×‎ ≈ 2,050,000 حرف)، واللوغو حتى 300KB ≈ 410,000 حرف، والحصة ≈ 5,242,880 حرفًا. <b>كوتيشنان بالحجم الأقصى + لوغو + البيانات = تجاوز الحصة.</b> والالتزامات لا تُحذف أبدًا فالمرفقات تتراكم إلى الأبد.</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>من الكوتيشن الثالث فصاعدًا كل حفظ يفشل ⇐ يُبتلع ⇐ الواجهة تقول «تم الحفظ» ⇐ ساعة عمل ⇐ إغلاق التبويب ⇐ كل شيء منذ أول فشل ضاع.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">أظهر الخطأ في <code>catch</code>، وخزّن المرفقات خارج <code>state</code> (IndexedDB) أو احتفظ باسم الملف فقط.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">D3</span><span class="sev">حرج</span><span class="f-title">حقول الكميات لا تُطبَّع رقميًا ⇐ سلسلة <code>NaN</code> تُعرض «0»</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:270</code> هو السطر الوحيد الذي يطبّع رقمًا في <code>materials</code> (<code>consumed</code> فقط)؛ و<code>fgReceipts</code> و<code>wasteRecords</code> و<code>materialMoves</code> لا تُمَس بأي تطبيع</dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">Math.max(0, Number(item.onHand) - Number(item.reserved) - Number(item.hold))   // undefined ⇒ NaN
+Number(value || 0).toLocaleString("en-US")                                      // NaN ⇒ "0"</pre></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>سجل قديم بلا حقل <code>blocked</code> ⇐ <code>fgAvailable = NaN</code> ⇐ الصافي المتاح <code>NaN</code> ⇐ الشاشة تعرض «0» ⇐ <b>المبيعات لا تستطيع بيع 4,000 وحدة موجودة فعلًا</b>. وعلى جانب المواد: <code>NaN &gt; 0</code> خاطئ ⇐ النقص يختفي ولا يصل المشتريات أبدًا.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">حلقة تطبيع في الترحيل لكل الحقول الرقمية، و<code>formatNumber</code> يُظهر «—» لغير المنتهي بدل «0».</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">D4</span><span class="sev">حرج</span><span class="f-title">ترتيب الترحيل خاطئ: v11 يضيف المستلم ثم v16 يرميه</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:317</code> (v11) يسبق <code>app.js:394</code> (v16)</dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">// v11
+migMaterial.onHand = Number(migMaterial.onHand || 0) + Number(receipt.received || 0);
+// v16 — إن كان survivor مؤكدًا أصلًا فإن item.onHand يُهمل كليًا
+if (item.stockConfirmed &amp;&amp; !survivor.stockConfirmed) { survivor.onHand = item.onHand; }</pre></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>حالة على المخطط 10، مادة لها سجلان مؤكدان بـ200 لكل منهما، واستلام قديم 500 مرتبط بالثاني. v11 يجعل الثاني 700 ⇐ v16 يبقي الأول (200) ويرمي الثاني ⇐ <b>500 وحدة اختفت في الترحيل بلا سجل تدقيق.</b></dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">انقل كتلة v11 بعد v16، أو استخدم <code>Math.max</code> عند الدمج.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">D5</span><span class="sev">عالي</span><span class="f-title">مقارنة كود المادة صارمة في دالة واحدة بينما كل الملف يطبّع ⇐ انهيار صفحة المخزون</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:1115</code> — <code>materialRecordsSameCode</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">return state.materials.filter(item =&gt; item.materialCode === code);   // بلا normalizeCode</pre></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>سجل بكود <code>"rm-01"</code> (استيراد أو بيانات قديمة) ⇐ المستدعي يمرّر <code>"RM-01"</code> ⇐ <code>records[0]</code> يساوي <code>undefined</code> ⇐ <code>TypeError</code> في <code>renderRmStockCard</code> و<code>openStockForm</code> ⇐ <b>شاشة بيضاء</b> لأن لا <code>try/catch</code> حول الرسم. والترحيل يطبّع <code>productCode</code> ولا يطبّع <code>materialCode</code> أبدًا.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix"><code>normalizeCode</code> في الطرفين + تطبيع لمرة واحدة في الترحيل + <code>try/catch</code> حول <code>renderPage</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">D6</span><span class="sev">عالي</span><span class="f-title">الترحيل يحذف سجلات صامتًا — رقم بفاصلة عربية يمحو سطر أوردر</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:222، 225، 230، 255، 332</code> — خمسة مرشّحات <code>filter</code> بلا أي إشعار</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>سطر أوردر كميته <code>"1٬200"</code> ⇐ <code>Number()</code> يعطي <code>NaN</code> ⇐ الشرط <code>&gt; 0</code> خاطئ ⇐ <b>السطر يُحذف عند أول إعادة تحميل</b> وأول حفظ يثبّت الحذف. الوكيل يرى أوردره ناقصًا بلا سبب ظاهر.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">اجمع عدد المحذوفات واستدعِ <code>addAudit</code> و<code>showToast</code> بدل الحذف الصامت.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">D7</span><span class="sev">عالي</span><span class="f-title">تبويب قديم يدهس عمل تبويب آخر — والنافذة المفتوحة تعمل على حالة مُستبدلة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:685</code> + <code>app.js:5839</code> — لا يوجد أي <code>version</code> أو <code>updatedAt</code> للمقارنة</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>تبويب المخزن فتح نموذج الأرصدة ⇐ تبويب الإنتاج يسجّل فعليًا فيُخصم من <code>onHand</code> ⇐ حدث <code>storage</code> يستبدل <code>state</code> لكن <code>#app-dialog</code> عنصر مستقل فلا يُغلق ⇐ المخزن يحفظ الأرقام القديمة ⇐ <b>خصم الإنتاج أُلغي بصمت</b>.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">أغلق أي نافذة مفتوحة في معالج <code>storage</code> وأخطر المستخدم قبل استبدال <code>state</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">D8</span><span class="sev">عالي</span><span class="f-title">حذف منتج مسموح رغم وجود أوردرات وكلاء عليه</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5534</code> — قائمة الفحص تشمل الفوركاست والخطط والفعلي والمبيعات وFG، ولا تشمل <code>agentOrders</code></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>أوردر 5,000 وحدة لشهر أيلول لم يُبنَ عليه فوركاست بعد ⇐ الحذف ينجح ⇐ <code>agentDemandUncovered</code> يحسب 5,000 غير مغطاة <b>إلى الأبد</b> (لا يمكن تغطية منتج محذوف لأن نموذج الفوركاست يُبنى من <code>state.products</code>) ⇐ مؤشر الداشبورد منفوخ دائمًا، وعمود المنتج في التقرير فارغ.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">أضف فحص <code>agentOrders[].lines[].productCode</code> إلى شرط الارتباط.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">D9</span><span class="sev">عالي</span><span class="f-title">حذف مادة مسموح رغم ارتباطها بوصفة باكينغ أو بسجل توالف</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5547</code> — الفحص يشمل <code>materials</code> و<code>rawReceipts</code> و<code>materialMoves</code> فقط</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>مادة مدرجة في <code>packingBom</code> تُحذف ⇐ شاشة تعريف المنتجات ما زالت تعرض «وصفة باكينغ: 3 مواد» ⇐ زر «حساب الباكينغ من الوصفة» يحسب كميتها لكن جدول الاحتياجات يُبنى من <code>state.rawMaterials</code> فقط ⇐ <b>الكمية تُرمى بصمت</b> والإنتاج يظن أن الباكينغ حُسب كاملًا.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">أضف <code>products[].packingBom</code> و<code>wasteRecords</code> إلى شرط الارتباط.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">D10</span><span class="sev">عالي</span><span class="f-title">تعطيل مادة يجمّد احتياجها إلى الأبد بلا إمكانية إزالته</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:3806</code> — الصفوف تُبنى من المواد النشطة فقط</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>مادة عليها احتياج 800 كغم غير مؤكد الرصيد، ثم تُعطَّل (استُبدلت بمورد آخر) ⇐ الصف يختفي من الجدول فلا يمكن تصفيره ولا حذفه ⇐ يبقى في <code>forecastRequirements</code> ⇐ <code>productMaterialsReady</code> يظل false ⇐ <b>لا يمكن تسجيل أي إنتاج على هذا المستند أبدًا</b>، والرسالة تقول «يلزم تغطية المواد» بلا تحديد أيها.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">اعرض المواد المعطّلة التي لها سجل احتياج قائم مع شارة «معطّلة — صفّرها لإزالتها».</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">D11</span><span class="sev">عالي</span><span class="f-title">تعديل الفوركاست لا يُحدّث سجلات الاحتياج ⇐ شراء بضعف الحاجة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4740</code> — يُضبط <code>readinessStale = true</code> فقط، ولا يُلمَس أي سجل احتياج</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>مستند 12 شهرًا × 3 منتجات باحتياج 6,000 كغم، عُدِّل إلى 4 أشهر ومنتجين. الاحتياج يبقى 6,000 موزعًا على 8 أشهر لم تعد ضمن المستند ⇐ <b>أمر شراء بضعف الحاجة</b>، وتلك الأشهر لن تُستهلك أبدًا ⇐ نقص وهمي دائم.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">بعد التعديل، قصّ <code>monthlyQty</code> لكل سجل على <code>forecast.months</code> وأعد حساب <code>required</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">D12</span><span class="sev">متوسط</span><span class="f-title">سقف 400 حركة يمحو تاريخ الحركة صامتًا فتخطئ التقارير الشهرية</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:642</code> — <code>slice(0, 400)</code> مع <code>unshift</code></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>40 مادة × 12 شهرًا (استلام/سحب/توالف) تتجاوز 400 خلال أسابيع ⇐ <code>movesInMonth</code> يرجع صفرًا لشهر فيه استلامات فعلية ⇐ <b>جدول الحركة وتقرير حركة المواد يعرضان أصفارًا كاذبة</b>.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">قصّ حسب النافذة الزمنية (آخر 24 شهرًا) بدل عدد ثابت، أو حذّر عند القص.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">D13</span><span class="sev">متوسط</span><span class="f-title">التوالف تختفي من جدول الحركة الشهرية إذا لم يكن في الشهر وارد ولا سحب</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:2103</code> — <code>if (!received &amp;&amp; !withdrawn) return "—";</code> و<code>wasted</code> محسوب لكنه خارج الشرط</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>شهر بلا وارد ولا سحب لكن فيه تلف 300 كغم مخصومة فعلًا من الرصيد ⇐ الخانة «—» ⇐ <b>فجوة غير مفسَّرة</b> بين رصيد الشهر السابق واللاحق.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">أضف <code>&amp;&amp; !wasted</code> إلى الشرط.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">D14</span><span class="sev">متوسط</span><span class="f-title">التحقق الرقمي يقبل صيغًا خطرة ويرفض صيغًا مشروعة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:3344</code> — <code>validNumber</code> يعتمد <code>Number()</code> مباشرة</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd><code>Number("0x10")</code> يعطي 16 ⇐ خلية نصها <code>0x10</code> تُقبل كستة عشر. و<code>Number("1,500")</code> يعطي <code>NaN</code> ⇐ <b>أي ملف بفواصل آلاف يُرفض صامتًا</b>.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">تحقق بنمط رقمي صريح بعد إزالة فواصل الآلاف العربية واللاتينية.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-low">
+    <div class="f-head"><span class="f-id">D15</span><span class="sev">منخفض</span><span class="f-title">مُعرِّف السجل يعيد دورته كل 25 يومًا والعدّاد يُصفَّر عند كل تحميل</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:200</code> — <code>Date.now().toString(36).slice(-6)</code> ⇐ الدورة <code>36⁶ ÷ 86,400,000 = 25.19</code> يومًا</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>تصادم المعرّفات يربط سجلًا بسجل خاطئ في <code>state.commitments.find(materialId)</code> و<code>fgReceipts.find(actualId)</code>.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">عدّاد محفوظ في <code>state</code> أو <code>crypto.randomUUID()</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-low">
+    <div class="f-head"><span class="f-id">D16</span><span class="sev">منخفض</span><span class="f-title">تجميد الأسبوع ينزلق يومًا بسبب التوقيت العالمي</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:508</code> + <code>app.js:3354</code> — <code>date.toISOString().slice(0,10)</code></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>في بغداد (UTC+3) قبل الساعة 03:00 تُعيد الدالة تاريخ اليوم السابق ⇐ أسبوع مجمّد يصبح قابلًا للتعديل.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">ابنِ التاريخ محليًا من <code>getFullYear/getMonth/getDate</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-low">
+    <div class="f-head"><span class="f-id">D17</span><span class="sev">منخفض</span><span class="f-title">تاريخ نهاية المستند مثبَّت على اليوم 28 دائمًا</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4732، 4749</code> — <code>endDate: lastMonth + "-28"</code> رغم وجود <code>lastDayOfMonth</code> في السطر 488</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">استخدم <code>lastDayOfMonth(month)</code> الموجودة أصلًا.</dd></div>
+    </dl>
+  </article>
+
+  <!-- ============ 05 STOCK ============ -->
+  <h2><span class="sec-id">06</span> حساب المخزون</h2>
+  <p class="sec-note">الرصيد الفيزيائي واحد لكل كود مهما تعددت الخطط، والتوزيع بين الخطط مبني في <code>materialAllocations</code> بشكل منهجي سليم. المشاكل أدناه في السحب والعرض لا في التوزيع.</p>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">S1</span><span class="sev">حرج</span><span class="f-title">الاستهلاك يُقصّ عند الصفر بينما <code>consumed</code> يزيد ⇐ كمية تضيع من الدفاتر</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:1187</code> — <code>consumeMaterialsForRun</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">var consume = Math.min(base, effectiveRequired(item));       // مقيّد بالمطلوب فقط، لا بالمتاح
+item.consumed = Number(item.consumed || 0) + consume;         // يُزاد دائمًا
+var newOnHand = Math.max(0, Number(records[0].onHand||0) - consume);   // يُقصّ عند الصفر</pre></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>مادة رصيدها 100 كغم مستخدمة في مستندين كل منهما يطلب 60. تشغيل الأول يستهلك 60 ⇐ الرصيد 40. تشغيل الثاني يستهلك 60 ⇐ الرصيد يُقصّ إلى 0 بينما <code>consumed</code> يسجّل 120. <b>20 كغم اختفت بلا أي تحقق أو رسالة.</b></dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">قيّد الاستهلاك بالمتاح فعلًا وارفض التشغيل عند العجز بدل القصّ الصامت.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">S2</span><span class="sev">حرج</span><span class="f-title">فرع احتياطي يسحب مواد شهر آخر</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:1183</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">if (base &lt;= 0) { base = Number(item.required||0) * (producedUnits / forecastTotalQty(forecast)); }</pre></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>باكينغ موسمي مطلوب 500 في آذار فقط، وإجمالي المستند 1,000 وحدة. تسجيل 200 وحدة في كانون الثاني ⇐ حاجة الشهر صفر ⇐ الفرع الاحتياطي يحسب <code>500 × (200/1000) = 100</code> ⇐ <b>سحب 100 وحدة باكينغ في شهر لا تُستخدم فيه</b>، وتُسجَّل حركة سحب كاذبة.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">احذف الفرع الاحتياطي: <code>if (base &lt;= 0) return;</code></dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">S3</span><span class="sev">حرج</span><span class="f-title">سحب المواد يُوزَّع بالتناسب مع عدد الوحدات لا حسب الوصفة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:1179</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">var plannedMonth = forecast.items.reduce((s, i) =&gt; s + Number(i.monthlyQty[month]||0), 0);
+var base = plannedMonth &gt; 0 ? monthNeed * (producedUnits / plannedMonth) : 0;</pre></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>شهر فيه المنتج A بـ1,000 والمنتج B بـ1,000، واحتياج «كوب 500ml» = 1,000 قطعة للمنتج A وحده. عند إنتاج 1,000 من B فقط: السحب = <code>1000 × (1000/2000) = 500 كوب</code> ⇐ <b>خُصمت 500 قطعة من منتج لا يستهلكها</b>، ويصبح A ناقصًا 500 وهميًا. الأثر يتراكم كل شهر.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">احسب السحب من الوصفة: <code>qtyPerUnit × producedUnits</code> لكل مادة، أو رجّح التناسب بمعامل الوصفة.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">S4</span><span class="sev">عالي</span><span class="f-title">خصم مزدوج بين الجرد اليدوي والخصم التلقائي</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4300</code> (<code>saveStockForm</code> يكتب الرصيد مباشرة) مقابل <code>app.js:1192</code></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>يوم 1: تأكيد 1,000. يوم 5: الإنتاج يسحب 200 فيزيائيًا بلا تسجيل. يوم 6: جرد يرى 800 ويؤكدها. يوم 7: تسجيل الفعلي يخصم 200 مرة أخرى ⇐ الرصيد الدفتري 600 والحقيقي 800 ⇐ <b>نقص وهمي يذهب للشراء</b>.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">تجاهل الخصم التلقائي إذا كان تاريخ آخر جرد لاحقًا لتاريخ التشغيل.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">S5</span><span class="sev">عالي</span><span class="f-title">بقايا الفواصل العشرية تُجمّد المستند نهائيًا وتُولّد نقصًا وهميًا أبديًا</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:1137</code> <code>effectiveRequired</code> + <code>app.js:909</code></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>مطلوب 100، ثلاث تشغيلات كل منها ثلث الشهر ⇐ <code>consumed = 99.99999999999999</code> ⇐ المتبقي <code>1.42e-14</code>. النتيجة: <code>0 &gt;= 1.42e-14</code> خاطئ ⇐ <b>لا يمكن تسجيل أي إنتاج جديد على المستند إلى الأبد</b>؛ والمادة تبقى في قائمة الشراء بكمية معروضة «0» ويمكن فعليًا إنشاء أمر شراء بها.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">دوّر إلى ست منازل عند الطرح وعند كتابة <code>consumed</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">S6</span><span class="sev">عالي</span><span class="f-title">«المتاح» يُعرض مكررًا لكل خطة ⇐ الرصيد يبدو ثلاثة أضعافه</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:1856، 1909، 2595، 2703</code> — تستدعي <code>materialAvailable(item)</code> بينما <code>materialAllocatedAvailable</code> (1169) صُمِّمت لهذا الغرض بالضبط</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>مادة رصيدها 1,000 مستخدمة في ثلاثة مستندات ⇐ ثلاثة صفوف كل منها يقول «المتاح 1,000» ⇐ <b>3,000 وحدة ظاهرية</b> يقرر الإنتاج والمالية على أساسها.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">استبدل الدالة بـ<code>materialAllocatedAvailable(item)</code> في المواضع الأربعة.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">S7</span><span class="sev">عالي</span><span class="f-title">إضافة الوارد المتوقع بلا حماية عددية ⇐ <code>NaN</code> يُخفي النقص</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4922</code> — السطر الوحيد في الحساب كله بلا <code>Number(x || 0)</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">row.material.inbound += row.qty;   // undefined + 500 = NaN</pre></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>سجل قديم بلا حقل <code>inbound</code> ⇐ <code>NaN</code> ⇐ النقص يصبح <code>NaN</code> ⇐ <b>المادة الناقصة تختفي من قائمة الشراء نهائيًا</b> والصف يعرض «0».</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix"><code>row.material.inbound = Number(row.material.inbound || 0) + row.qty;</code></dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">S8</span><span class="sev">عالي</span><span class="f-title">تصحيح استلام المنتج النهائي يدهس الكميات المباعة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4987</code> — <code>fg-form</code> بلا سقف على المستلم ولا فحص للمباع</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>تأكيد 1,000 ⇐ بيع 900 ⇐ تصحيح الاستلام إلى 100 ⇐ الصافي <code>Math.max(0, 100-900) = 0</code> ⇐ <b>العجز يختفي بدل أن يظهر</b>، وتاريخ التأكيد الأصلي يُدهس. وبالعكس يمكن إدخال مستلم أكبر من المنتَج فيُباع أكثر مما أُنتج.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">امنع خفض المستلم تحت المباع وتجاوزه للمنتَج، واحتفظ بتاريخ التأكيد الأول.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">S9</span><span class="sev">متوسط</span><span class="f-title">الحجز في المنتج النهائي يُخصم مرتين مع البيع</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:1111</code> + <code>app.js:602</code></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>دفعة 1,000 وحدة، حُجز 200 لعميل ⇐ المتاح 800. ثم تُسجَّل مبيعات تلك الـ200 نفسها ⇐ الصافي <code>800 − 200 = 600</code> بينما الصحيح 800. <b>الوحدات خُصمت مرتين</b>، و<code>Math.max(0,…)</code> يخفي أي انزلاق.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">أنقص الحجز عند تسجيل البيع المرتبط به، أو اجعل الحجز التزامًا منفصلًا خارج معادلة المتاح.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">S10</span><span class="sev">متوسط</span><span class="f-title">لا سقف على الكمية الفعلية ⇐ تشغيل واحد يبتلع احتياج السنة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4137</code> — الحقل بلا <code>max</code>، والتحقق موجب فقط</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>مادة مطلوبة 1,200 موزعة 100/شهر، وخطة كانون الثاني 100 وحدة. كتابة 1,000 بالخطأ (صفر زائد) ⇐ السحب <code>100 × (1000/100) = 1,000</code> ⇐ <b>سُحبت مواد عشرة أشهر في تشغيل واحد</b> بلا تحذير.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">أضف <code>max</code> بالمتبقي من خطة الشهر وارفض التجاوز.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">S11</span><span class="sev">متوسط</span><span class="f-title">مساواة عشرية صارمة تُقفل نموذج الخطة الأسبوعية</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5078، 5132، 5171</code> — <code>if (wpSum !== wpPlanned)</code> مع حقول <code>step="any"</code></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>كمية الشهر 1,000.3 والتقسيم <code>300.1 × 3 + 100</code> يعطي <code>1000.3000000000001</code> ⇐ <b>رفض دائم</b>، ورسالة الخطأ تعرض الرقمين متطابقين بعد التنسيق ⇐ المستخدم عالق بلا مخرج.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix"><code>Math.abs(wpSum - wpPlanned) &gt; 1e-6</code></dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">S12</span><span class="sev">متوسط</span><span class="f-title">التوزيع اليومي يقبل مجموعًا أقل من كمية الأسبوع فتمر كميات بلا اعتماد</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:5208</code> — يفحص التجاوز فقط <code>if (daySum &gt; qty)</code></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>أسبوع كميته 1,000، وُزِّع منها 600 على الأيام ⇐ وحدات الاعتماد 600 فقط ⇐ تُعتمد ⇐ التشغيلات الجاهزة تسمح بإنتاج 1,000 كاملة ⇐ <b>400 وحدة مرّت بلا اعتماد أي طرف</b>.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">اشترط <code>daySum === Number(dayWeek.qty)</code>.</dd></div>
+    </dl>
+  </article>
+
+  <!-- ============ 06 PLANNING ============ -->
+  <h2><span class="sec-id">07</span> منطق التخطيط والوصفات والوحدات</h2>
+  <p class="sec-note">هنا تقع أعمق فجوة في النظام: الاحتياج يُكتب يدويًا ولا يُشتق من وصفة، ووحدة الشراء معرَّفة ولا تُستعمل في أي عملية حسابية.</p>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">L1</span><span class="sev">حرج</span><span class="f-title">احتياج المواد الخام يدوي بالكامل — لا رابط رياضي بين كمية المنتج والمادة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:3764</code> <code>materialRequirementSection</code> ترسم شبكة فارغة، و<code>app.js:4804</code> يحفظ ما كُتب كما هو. جدول المنتجات أعلى الشبكة مرجع للقراءة فقط.</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>كل الشراء والنقص وتغطية الفوركاست تُبنى على أرقام مكتوبة يدويًا بلا أي تحقق. <b>خطأ صفر واحد</b> (50,000 بدل 5,000 كغم سكر) لا يوقفه أي فحص — يمر إلى النقص ثم إلى أمر شراء توافق عليه المالية. وصفة الباكينغ موجودة (<code>packingBom</code>) لكنها لا تغطي إلا تصنيف الباكينغ.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">عمّم <code>packingBom</code> إلى وصفة كاملة لكل التصنيفات، واجعل الشبكة تُحسب تلقائيًا مع سماح بتجاوز يدوي موسوم بعلامة.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">L2</span><span class="sev">حرج</span><span class="f-title">أمر الشراء يُرفع بوحدة الاستهلاك لا بوحدة الشراء — والمعامل معرَّف ومهمَل</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4043</code> يملأ الكمية بالنقص كما هو، و<code>app.js:4921</code> يحفظها ويضيفها للوارد بنفس الوحدة</dd></div>
+      <div class="row"><dt>التحقق</dt><dd><code>conversionFactor</code> و<code>purchaseUnit</code> يظهران في تسعة مواضع (تعريف، استيراد، تصدير، عرض) و<b>لا يدخلان أي عملية حسابية على الإطلاق</b>.</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>سكر، وحدة الاستهلاك كغم، وحدة الشراء «كيس 25 كغم»، المعامل 25، النقص 5,000 كغم ⇐ يظهر في نموذج أمر الشراء الرقم 5,000 ويُرسل للمورد كـ<b>5,000 كيس = 125,000 كغم</b>، أي 25 ضعف الحاجة. وعند الاستلام يُقيَّد الوارد 5,000 بوحدة الاستهلاك فيبقى الرصيد مغلوطًا في الاتجاهين.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">اعرض واحفظ <code>ceil(shortage / conversionFactor)</code> مع <code>purchaseUnit</code> بجوارها، واضرب بالمعامل عند تحويل الاستلام.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">L3</span><span class="sev">عالي</span><span class="f-title">وصفة الباكينغ تُدخَل كمعامل مقلوب يدويًا — بلا اشتقاق ولا حماية</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4521</code> يخزّن <code>qtyPerUnit</code>، و<code>app.js:5606</code> يضرب فيه مباشرة؛ <code>piecesPerCarton</code> و<code>packSize</code> لا يدخلان المعادلة إطلاقًا</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>كرتون 24 قطعة: المستخدم مطالب بكتابة 0.042 يدويًا. الصحيح <code>1/24 = 0.0416667</code> ⇐ لـ100,000 وحدة: 4,200 بدل 4,166.7 ⇐ <b>‎+33 كرتون في كل مستند</b>. والأخطر: من يكتب 24 (فهمًا أنها «القطع في الكرتون») يحصل على <b>خطأ ×576</b> بلا أي تحقق.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">اشتقّ <code>qtyPerUnit = 1 / piecesPerCarton</code> تلقائيًا عند وجودها، واحفظ أساس القياس مع السطر.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">L4</span><span class="sev">عالي</span><span class="f-title">مقترح المبيعات المباشرة غير سليم إحصائيًا — يقسم على الأشهر التي بها بيع فقط</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:1428</code> — <code>directSalesSuggestion</code></dd></div>
+      <div class="row"><dt>الكود</dt><dd><pre class="snip">direct.forEach(i =&gt; { var k = monthKeyOf(i.date); if (k &amp;&amp; months.indexOf(k) === -1) months.push(k); });
+return Math.round(total / Math.max(1, months.length));   // المقام = أشهر البيع، لا طول النافذة</pre></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>بيع 300 وحدة في كانون الثاني ولا شيء حتى آب ⇐ المقترح 300/شهر بينما المتوسط الحقيقي على ثمانية أشهر 37.5 ⇐ <b>تضخيم ثمانية أضعاف</b>. ونافذة الحساب غير محدودة (كل التاريخ بوزن واحد)، والشهر الجاري الناقص يخفض المتوسط، ورقم واحد يُطبَّق على كل الأشهر فيستحيل تمثيل الموسمية. والمنتج الجديد يعطي صفرًا فيُحذف صفه كليًا من المحرّر.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix"><code>مجموع آخر N شهرًا ÷ N</code> بعد استبعاد الشهر الجاري، مع عرض عدد الأشهر ذات البيانات كمؤشر ثقة، وإبقاء صف المنتج الجديد للإدخال اليدوي.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">L5</span><span class="sev">عالي</span><span class="f-title">القناة الافتراضية «مباشر» تسمح بازدواج الطلب 100%</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4249</code> — القناة افتراضها <code>direct</code> والأوردر افتراضه «بلا أوردر»، ولا إلزام بالربط</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>أوردر وكيل بـ1,000 قطعة لأيلول، ثم سُجِّل تسليمه بيعًا «مباشرًا» بلا اختيار الأوردر ⇐ المقترح المباشر 1,000 وطلب الوكلاء 1,000 ⇐ <b>المحرّر يقترح 2,000 لنفس الطلب</b>، والأوردر يبقى «بانتظار التضمين» لأن المسلَّم صفر. <b>الحماية الأساسية سليمة</b> (البيع المربوط بأوردر يُوسم <code>agent</code> ويُستبعد من المقترح) — المنفذ هو الافتراض لا المنطق.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">إن وُجد أوردر مفتوح لنفس المنتج، امنع الحفظ كـ«مباشر» بلا تأكيد صريح.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">L6</span><span class="sev">عالي</span><span class="f-title">التغطية تخلط القناتين فتُعلن تغطية باستهلاك حصة قناة أخرى</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:1401</code> <code>agentDemandUncovered</code> + <code>app.js:1416</code> <code>fixedForecastQty</code></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>طلب وكلاء آذار 5,000، ثُبِّت مستند بـ8,000 (‎5,000 وكلاء + 3,000 مباشر). وصل أوردر جديد 4,000 ⇐ الطلب 9,000 و«غير المغطى» يُحسب <code>9,000 − 8,000 = 1,000</code> بينما الفعلي 4,000 ⇐ <b>3,000 وحدة من حصة القناة المباشرة تُحتسب تغطيةً للوكلاء</b>.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">خزّن في سطر الفوركاست تفكيك المصدر (<code>agentQty</code> / <code>directQty</code>) عند البناء من المحرّر، وقارن طلب الوكلاء بحصتهم وحدها.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">L7</span><span class="sev">عالي</span><span class="f-title">لا مانع من تثبيت مستندين يغطيان نفس المنتج والشهر</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:1416</code> يجمع عبر كل المستندات المثبتة، ولا فحص تفرد في الحفظ (4749) ولا في التثبيت (4796)</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>بُني المقترح مرتين لآذار بـ12,000 لكل مرة ⇐ الكمية المثبتة تُقرأ 24,000 و«غير المغطى» صفر ⇐ تُولَّد <b>خطتان أسبوعيتان</b> ⇐ إنتاج 24,000 مقابل طلب 12,000.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">ارفض التثبيت إذا كان لأي (منتج × شهر) كمية موجبة في مستند مثبت آخر.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">L8</span><span class="sev">عالي</span><span class="f-title">مقترح محرّر الطلب يُرفض حفظه إذا كانت أشهر الطلب غير متصلة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4197</code> يمرّر الأشهر ذات القيم فقط، و<code>app.js:4700</code> يقارنها بأشهر متصلة مولَّدة من المدى</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>أوردرات لشهري كانون الثاني وحزيران فقط ⇐ الشبكة شهران والمقارنة ستة أشهر ⇐ <b>«تغيرت الأشهر بعد بناء الجدول» في كل محاولة أولى</b>.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">مرّر <code>monthsBetween(أول شهر، آخر شهر)</code> من المحرّر.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">L9</span><span class="sev">متوسط</span><span class="f-title">مصفوفة الطلب لا تطرح المسلَّم فعليًا</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:1380</code> يجمع <code>line.qty</code> كاملة ولا يستدعي <code>agentOrderDeliveredQty</code></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>أوردر 1,000 لأيلول سُلِّم منه 700 ⇐ بناء الفوركاست في منتصف أيلول يعرض طلب وكلاء 1,000 والصحيح 300 ⇐ <b>700 وحدة تُنتَج مرتين</b>. ولا فلترة للأشهر الماضية: أوردر كانون الثاني المسلَّم بالكامل يظل يولّد صفًا في آب.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">اطرح المسلَّم داخل المصفوفة، واستبعد الأشهر المنقضية من المحرّر ومن مؤشر الداشبورد.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">L10</span><span class="sev">متوسط</span><span class="f-title">هامش النمو يُضرب في طلب الوكلاء المؤكد أيضًا</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4493</code> — <code>dcTotal = Math.round(dcTotal * (1 + dcGrowth/100))</code></dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>أوردرات مؤكدة 10,000 + مباشر مقدَّر 2,000 وهامش 10% ⇐ 13,200، أي <b>1,000 وحدة فائضة مبنية على طلب مؤكد لا عدم يقين فيه</b>. الصحيح: <code>وكلاء + (مباشر × (1+الهامش))</code>.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">طبّق الهامش على الجزء التقديري فقط.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">L11</span><span class="sev">متوسط</span><span class="f-title">لا حماية لوحدة القياس في أوردر الوكيل ولا في أي مسار استيراد</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:4181</code> يعرض الوحدة نصًا فقط؛ مسارات الاستيراد لا تقرأ عمود وحدة إطلاقًا</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>مادة معرَّفة بالكيلوغرام وملف احتياجات معبأ بالطن ⇐ 3 تُقرأ 3 كغم ⇐ <b>نقص 2,997 كغم لا يظهر</b> حتى يتوقف الخط. ونفس المخاطرة بين الكرتون والقطعة في أوردر الوكيل.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">اقرأ عمود وحدة اختياريًا وارفض أو حذّر عند اختلافه عن وحدة التعريف.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-low">
+    <div class="f-head"><span class="f-id">L12</span><span class="sev">منخفض</span><span class="f-title">التوزيع الأسبوعي المتساوي يتجاهل أن الأسبوع الرابع أطول</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:493</code> — الأسابيع مقاطع ثابتة 1‑7 / 8‑14 / 15‑21 / 22‑النهاية</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>شهر 31 يومًا وكمية 31,000 ⇐ 7,750/أسبوع ⇐ <code>1,107</code> يوميًا في الأسبوع الأول مقابل <code>775</code> في الرابع — <b>فارق 30% في الحمل اليومي</b> يفترض سعة غير واقعية.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">وزّع بالتناسب مع أيام العمل في كل مقطع.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-low">
+    <div class="f-head"><span class="f-id">L13</span><span class="sev">منخفض</span><span class="f-title">الخطة الشهرية للشهر الجاري تولد مجمّدة بالكامل</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:508</code> <code>weekEditable</code> يقارن بداية المقطع، والحبيبة الشهرية تجعل البداية أول الشهر</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">استثنِ الحبيبة الشهرية من قاعدة التجميد أو قِس من نهاية المقطع.</dd></div>
+    </dl>
+  </article>
+
+  <!-- ============ 07 IMPORT ============ -->
+  <h2><span class="sec-id">08</span> الاستيراد والقوالب</h2>
+  <p class="sec-note">أربعة مسارات استيراد بأربعة سلوكيات مختلفة عند تكرار الصف — وهذا وحده يفسّر أرقامًا غير متوقعة بعد أي رفع ملف.</p>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">I1</span><span class="sev">عالي</span><span class="f-title">تعارض جوهري: أوردرات الوكلاء تُضاعف بينما بقية المسارات تُهمِل</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:3139</code> يدفع سطرًا جديدًا لكل صف؛ بينما <code>4640</code> و<code>4678</code> و<code>5030</code> تستبدل القيمة</dd></div>
+      <div class="row"><dt>السيناريو أ</dt><dd>رفع ملف الأوردرات مرتين (لا بصمة ولا فحص تكرار) ⇐ <b>طلب الوكلاء يقفز إلى الضعف</b> في الداشبورد وفي التغطية وفي بناء الفوركاست.</dd></div>
+      <div class="row"><dt>السيناريو ب</dt><dd>ملف احتياجات فيه صفان لنفس المادة والشهر (300 خام + 200 إضافة) ⇐ <b>يبقى 200 فقط</b>، ورسالة النجاح تقول «طابق صفين، عبّأ خانتين» بينما ضاعت 300.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">وحّد السلوك على الجمع مع عدّاد تكرارات يُعرض في الرسالة، وأضف بصمة ملف لأوردرات الوكلاء.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">I2</span><span class="sev">متوسط</span><span class="f-title">قارئ Excel يختار الورقة أبجديًا لا بترتيب المصنّف</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:3049</code> — <code>.sort()[0]</code> بلا قراءة <code>xl/workbook.xml</code></dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>قالب فيه ورقة «شرح الأعمدة» أُنشئت أولًا ⇐ يُقرأ محتوى الشرح ⇐ «لا يوجد أي صف يطابق مادة معرفة». ومع عشر أوراق فأكثر يسبق <code>sheet10</code> الورقة <code>sheet2</code> أبجديًا.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">اقرأ ترتيب الأوراق من <code>workbook.xml</code> واستخدم أولها.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">I3</span><span class="sev">متوسط</span><span class="f-title">تواريخ Excel تصل أرقامًا تسلسلية فتُستبدل بتاريخ اليوم صامتًا</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:3060</code> لا يقرأ تنسيقات الأرقام؛ و<code>app.js:3131</code> يفحص النمط <code>YYYY-MM-DD</code> فقط</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>خلية تاريخ تصل كـ<code>"45658"</code> ⇐ الفحص يفشل ⇐ يُستبدل بتاريخ الرفع ⇐ <b>كل الأوردرات المستوردة تحمل تاريخ اليوم</b> فينهار مفتاح التجميع (وكيل|شهر|تاريخ) وتُدمج أوردرات كان يجب فصلها.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">حوّل التسلسل عند مطابقة خمسة أرقام: <code>Date.UTC(1899,11,30) + serial × 86400000</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">I4</span><span class="sev">متوسط</span><span class="f-title">قارئ CSV يدعم الفاصلة فقط</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:2992</code> — الفاصل ثابت</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>Excel بإعدادات عربية/أوروبية يصدّر بفاصلة منقوطة ⇐ الصف كله خلية واحدة ⇐ «لم تُضف سجلات». واقتباس مفرد غير مغلق يبتلع بقية الملف في خلية واحدة.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">استنتج الفاصل من السطر الأول وتحقق من توازن الاقتباس.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-low">
+    <div class="f-head"><span class="f-id">I5</span><span class="sev">منخفض</span><span class="f-title">مكتبة فك الضغط الاحتياطية مُشار إليها وغير موجودة</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>index.html:27</code> يحمّل <code>pako_inflate.min.js</code> وهو غير موجود في المجلد</dd></div>
+      <div class="row"><dt>السيناريو</dt><dd>قراءة Excel تعتمد كليًا على <code>DecompressionStream</code> ⇐ متصفح لا يدعمه (Safari أقدم من 16.4) ⇐ <b>كل استيراد Excel يفشل</b> ويبقى CSV فقط. ورؤوس الأعمدة المكررة يفوز آخرها بلا تنبيه.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">أضف الملف أو احذف السطر واعرض رسالة واضحة عند غياب الدعم.</dd></div>
+    </dl>
+  </article>
+
+  <!-- ============ 08 GAPS ============ -->
+  <h2><span class="sec-id">09</span> فجوات منهجية في التخطيط</h2>
+  <p class="sec-note">هذه ليست أخطاء في الكود بل أساسيات غير موجودة أصلًا. أثرها المالي أكبر من معظم الأخطاء أعلاه لأنه دائم لا عرضي.</p>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">G1</span><span class="sev">حرج</span><span class="f-title">لا بُعد زمني في صافي الاحتياج — يُشترى احتياج السنة كله اليوم</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الحالة</dt><dd><code>effectiveRequired</code> و<code>materialAllocations</code> يعملان على <b>الإجمالي</b> مقابل رصيد <b>اليوم</b>، بلا تقسيم زمني ولا ترحيل رصيد بين الأشهر — رغم أن <code>monthlyQty</code> مخزَّنة شهريًا أصلًا.</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>مستند 12 شهرًا باحتياج 120,000 كغم ورصيد اليوم 10,000 ⇐ نقص معلَن 110,000 <b>يُشترى دفعة واحدة الآن</b> رغم أن حاجة الشهر الأول 10,000 فقط ⇐ تجميد نقدي أحد عشر ضعفًا، ومخاطر صلاحية رغم أن <code>shelfLifeDays</code> معرَّف.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">احسب الصافي شهرًا بشهر مع ترحيل الرصيد الختامي، واقترح أمر شراء لكل فترة لا للمجموع.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-crit">
+    <div class="f-head"><span class="f-id">G2</span><span class="sev">حرج</span><span class="f-title">لا صافي احتياج للمنتج النهائي — المخزون القائم لا يُطرح من خطة الإنتاج</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الحالة</dt><dd><code>pendingProductionEntries</code> (<code>app.js:920</code>) يخطّط كمية الفوركاست كاملة؛ و<code>productNetAvailable</code> يُستخدم في نافذة البيع فقط.</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>رصيد المنتج النهائي 3,000 وفوركاست الشهر 10,000 ⇐ يُنتَج 10,000 والصحيح 7,000 ⇐ <b>فائض 3,000 وحدة</b> كل شهر، ولا أثر لأي مخزون افتتاحي في المستند.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix"><code>خطة الإنتاج = الفوركاست − المتاح − قيد التشغيل + مخزون الأمان</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">G3</span><span class="sev">عالي</span><span class="f-title">لا مخزون أمان — المخزون الاستراتيجي تنبيه رجعي لا حاجز</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الحالة</dt><dd>لا وجود لكلمة <code>safetyStock</code> في الملف. الموجود <code>strategicStock</code> حدّ أدنى يدوي للتنبيه فقط، <b>ولا يدخل معادلة النقص</b> في <code>materialShortage</code>.</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>احتياج 5,000 ورصيد 5,000 ومخزون استراتيجي 1,000 ⇐ النقص المحسوب صفر ⇐ تُستهلك المادة إلى الصفر ويُخترق المخزون الاستراتيجي <b>بلا أي أمر شراء</b>.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">أدخل <code>strategicStock</code> في معادلة النقص كحدّ أدنى واجب، واحسبه من تباين الطلب ومدة التوريد بدل إدخاله يدويًا.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">G4</span><span class="sev">عالي</span><span class="f-title">مدة التوريد شارة عرض فقط — لا تؤرّخ أمر الشراء ولا تتحقق من الوصول</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الحالة</dt><dd><code>leadTimeDays</code> تُستخدم في الشارة وعمود العرض والتقارير فقط. تاريخ الحاجة يُحسب أول شهر حاجة بلا أي طرح، وتاريخ الأوردر افتراضه اليوم، والوصول المتوقع يُكتب يدويًا بلا أي مقارنة.</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>مادة مدة توريدها 60 يومًا وحاجتها 1 حزيران: النظام يقبل أمرًا بتاريخ 20 أيار ووصولًا متوقعًا 15 تموز <b>بلا أي تحذير</b> — أي تأخر 45 يومًا عن الحاجة.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix"><code>آخر تاريخ للأوردر = تاريخ الحاجة − مدة التوريد</code>، وحذّر عند <code>الوصول المتوقع &gt; تاريخ الحاجة</code>.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-high">
+    <div class="f-head"><span class="f-id">G5</span><span class="sev">عالي</span><span class="f-title">لا نقطة إعادة طلب — الشراء دائمًا رد فعل بعد وقوع النقص</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الحالة</dt><dd>لا وجود لـ<code>ROP = متوسط الطلب اليومي × مدة التوريد + مخزون الأمان</code> في أي موضع؛ <code>strategicAlerts</code> تنبيه بعد الانخفاض لا قبله.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">احسب نقطة إعادة الطلب لكل مادة واعرضها في شاشة المخزون كخط أحمر.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">G6</span><span class="sev">متوسط</span><span class="f-title">الحد الأدنى لطلب المورد معرَّف ومهمَل</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الحالة</dt><dd><code>moq</code> يُدخَل في تعريف المادة ويُعرض في القائمة، ولا يظهر في نموذج أمر الشراء ولا يرفع الكمية.</dd></div>
+      <div class="row"><dt>مثال رقمي</dt><dd>الحد الأدنى 500 والنقص 120 ⇐ يُنشأ أمر بـ120 <b>يرفضه المورد</b> وتضيع دورة توريد كاملة.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">ارفع الكمية إلى الحد الأدنى تلقائيًا مع شارة توضح السبب.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-med">
+    <div class="f-head"><span class="f-id">G7</span><span class="sev">متوسط</span><span class="f-title">لا قياس لدقة التنبؤ — المقترح لا يتعلم من انحراف الشهر السابق</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الحالة</dt><dd>لا انحياز ولا نسبة خطأ ولا مقارنة مخطط/فعلي تغذّي المقترح التالي. شاشة المتابعة تعرض المقارنة بصريًا فقط.</dd></div>
+      <div class="row"><dt>الإصلاح</dt><dd class="fix">احسب الانحياز ونسبة الخطأ لكل منتج شهريًا واعرضهما في المحرّر كمعامل تصحيح مقترح.</dd></div>
+    </dl>
+  </article>
+
+  <!-- ============ 09 INTENTIONAL ============ -->
+  <h2><span class="sec-id">10</span> قرارات مقصودة — ليست أخطاء</h2>
+  <p class="sec-note">بنود تبدو أخطاءً في القراءة الأولى لكنها تنفيذ صحيح لقرارات سابقة. أوردتها لتوثيق المخاطرة المقبولة، لا للإصلاح.</p>
+
+  <article class="finding f-note">
+    <div class="f-head"><span class="f-id">N1</span><span class="sev">قرار مقصود</span><span class="f-title">الشراء يجري على مستند غير مثبت — والتعليق في الكود يناقض ذلك</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الموقع</dt><dd><code>app.js:947</code> <code>purchasableShortages</code> لا تفحص التثبيت، والدالة <code>materialForecastFixed</code> (942) موجودة لكنها تُستخدم كنص عرض فقط</dd></div>
+      <div class="row"><dt>القرار</dt><dd>هذا تنفيذ صحيح لقرارك في الإصدار 29: «عند وجود نقص بالمواد لا تُرسل للإنتاج بل يعمل طلب شراء» — والنص المعروض في النافذة يقولها صراحة: «دون انتظار تثبيت المستند».</dd></div>
+      <div class="row"><dt>المخاطرة</dt><dd>قد يُصرف مال على أرقام تُخفَّض لاحقًا أو تُلغى. مقبولة إذا كانت مدة التوريد أطول من دورة التثبيت — وهي كذلك في هذا المصنع.</dd></div>
+      <div class="row"><dt>المطلوب</dt><dd class="fix">حذف التعليق القديم في السطر 4033 فقط (يقول عكس ما ينفّذه الكود)، وإضافة شارة «مستند غير مثبت» على الصف لتوثيق المخاطرة أمام المشتريات.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-note">
+    <div class="f-head"><span class="f-id">N2</span><span class="sev">قرار مقصود</span><span class="f-title">أسماء المنتجات والمواد تبقى عربية في الوضع الإنكليزي والكردي</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الحالة</dt><dd>محرّك الترجمة يترجم نصوص الواجهة فقط ولا يمس قيم الحقول ولا بيانات المستخدم — بما في ذلك داخل تسميات المخططات.</dd></div>
+      <div class="row"><dt>المطلوب</dt><dd class="fix">إن أردت ترجمتها فعلًا، تلزم حقول «اسم إنكليزي» و«اسم كردي» في تعريف المنتجات والمواد والوكلاء — وهو ما ينتظر قرارك.</dd></div>
+    </dl>
+  </article>
+
+  <article class="finding f-note">
+    <div class="f-head"><span class="f-id">N3</span><span class="sev">قرار مقصود</span><span class="f-title">كل الحالة في المتصفح بلا خادم</span></div>
+    <dl class="rows">
+      <div class="row"><dt>الحالة</dt><dd>الهوية والصلاحيات وكلمات المرور كلها في مفتاح تخزين واحد يملكه المستخدم. هذا صحيح لنموذج تجريبي يعمل من ملف محلي بلا تثبيت.</dd></div>
+      <div class="row"><dt>الحد</dt><dd class="fix">لا شيء في هذه الطبقة ينتقل إلى الإنتاج كما هو: تقييم الهوية والصلاحيات يجب أن ينتقل إلى خادم قبل أي استخدام حقيقي متعدد المستخدمين. البنود <code>P1</code>–<code>P8</code> تستحق الإصلاح الآن لأنها تُفسد سلوك النموذج نفسه، لا لأنها ثغرات أمنية بالمعنى الإنتاجي.</dd></div>
+    </dl>
+  </article>
+
+  <div class="callout">
+    <b>ما لم يُرصد أي خلل فيه:</b> توزيع الرصيد بين الخطط (<code>materialAllocations</code>) منهجي وسليم ويمنع احتساب نفس الرصيد مرتين. حجب تقارير المواد والتكاليف عن المبيعات (<code>hideForSales</code>) صحيح في التقارير الاثني عشر جميعًا وفي التصدير المجمّع. تصالح مجاميع الأسابيع مع كمية الشهر مفروض في المسارات الثلاثة. وخصم التوالف من الرصيد يعمل كما صُمِّم.
+  </div>
+
+  <footer class="end">
+    <span>تدقيق ورك فلو EMICP</span>
+    <span>‎80 بندًا · مراجعة كود ثابتة</span>
+    <span>app.js v41 · Schema 22 · ٢٢ آب ٢٠٢٦</span>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var chips = Array.prototype.slice.call(document.querySelectorAll(".chip"));
+    var items = Array.prototype.slice.call(document.querySelectorAll(".finding"));
+    chips.forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        var f = chip.getAttribute("data-f");
+        chips.forEach(function (c) { c.setAttribute("aria-pressed", String(c === chip)); });
+        items.forEach(function (item) {
+          item.classList.toggle("hide", f !== "all" && !item.classList.contains(f));
+        });
+        document.querySelectorAll("h2").forEach(function (h) {
+          var sec = [], n = h.nextElementSibling;
+          while (n && n.tagName !== "H2") { if (n.classList && n.classList.contains("finding")) sec.push(n); n = n.nextElementSibling; }
+          if (!sec.length) return;
+          var anyVisible = sec.some(function (s) { return !s.classList.contains("hide"); });
+          h.style.display = anyVisible ? "" : "none";
+          var note = h.nextElementSibling;
+          if (note && note.classList.contains("sec-note")) note.style.display = anyVisible ? "" : "none";
+        });
+      });
+    });
+  })();
+</script>

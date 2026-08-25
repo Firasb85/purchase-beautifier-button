@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>بحث معمق — مفهوم وعملية EMICP</title>
+<style>
+  :root{--ink:#14323b;--sub:#4b6a72;--line:#dbe7e9;--bg:#f4f8f8;--card:#fff;--red:#b3261e;--red-bg:#fdeceb;--amber:#8a6100;--amber-bg:#fff4d6;--green:#146c43;--green-bg:#e3f4ea;--blue:#0b5cab;--blue-bg:#e8f1fb;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.9;font-size:15.5px}
+  .wrap{max-width:1020px;margin:0 auto;padding:32px 20px 80px}
+  header.rep{background:#103f4a;color:#fff;border-radius:14px;padding:28px 26px;margin-bottom:26px}
+  header.rep h1{margin:0 0 6px;font-size:25px}
+  header.rep p{margin:4px 0;color:#cfe3e7}
+  h2{font-size:21px;margin:40px 0 10px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  h3{font-size:17px;margin:0}
+  p{margin:8px 0}
+  .en{direction:ltr;unicode-bidi:isolate;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em;background:#eef3f4;border-radius:4px;padding:0 5px}
+  a{color:var(--blue)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0}
+  .sev{display:inline-block;font-size:12.5px;font-weight:700;border-radius:20px;padding:2px 12px;margin-inline-start:8px;vertical-align:middle}
+  .sev.critical{background:var(--red-bg);color:var(--red)}
+  .sev.high{background:var(--amber-bg);color:var(--amber)}
+  .sev.med{background:var(--blue-bg);color:var(--blue)}
+  .ok{background:var(--green-bg);color:var(--green)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;background:#fff;font-size:14px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:right;vertical-align:top}
+  th{background:#eef4f5}
+  ul{margin:8px 0;padding-inline-start:22px}
+  li{margin:5px 0}
+  .finding-head{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+  .grid3{display:grid;grid-template-columns:1fr;gap:6px;margin-top:8px}
+  .grid3 .cell{border-radius:8px;padding:8px 12px;font-size:14px}
+  .cell.now{background:#fbf1f0;border-inline-start:4px solid var(--red)}
+  .cell.std{background:#eef5fc;border-inline-start:4px solid var(--blue)}
+  .cell.fix{background:var(--green-bg);border-inline-start:4px solid var(--green)}
+  .cell b{display:block;margin-bottom:2px;font-size:12.5px;letter-spacing:.3px}
+  .cell.now b{color:var(--red)}
+  .cell.std b{color:var(--blue)}
+  .cell.fix b{color:var(--green)}
+  footer{margin-top:44px;color:var(--sub);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+  .src{font-size:12.5px;color:var(--sub)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="rep">
+  <h1>بحث معمق في مفهوم وعملية EMICP</h1>
+  <p>مقارنة تصميم العملية — لا الكود — بالممارسات القياسية في تخطيط التصنيع وسلاسل التوريد وصناعة الأغذية</p>
+  <p>المنهجية: مراجعة المفهوم كما هو منفذ فعليًا في النسخة الحالية (Schema 12) مقابل المراجع القياسية: MRP / MPS / S&amp;OP / ATP / Procure-to-Pay / HACCP / FEFO — مع التحقق من كل ادعاء عن سلوك النظام في الكود مباشرة قبل توثيقه.</p>
+  <p>التاريخ: 2026-08-21</p>
+</header>
+
+<h2>أولًا: أين يقف مفهوم EMICP على الخريطة القياسية</h2>
+<div class="card">
+<p>الدورة القياسية في مصانع الإنتاج للتخزين (Make-to-Stock) — وهي حالة مصنع مثلجات وعصائر — تمر بهذه المحطات: توقع الطلب ← موازنة الطلب والعرض (S&amp;OP) ← جدول الإنتاج الرئيسي (MPS) بعد <b>خصم مخزون المنتج الجاهز</b> ← تفجير الاحتياجات عبر الوصفة (BOM/MRP) بعد <b>خصم المخزون والوارد المجدول</b> ← الشراء بمهل توريد ومخزون أمان ← الاستلام والفحص ← الإنتاج مع تسجيل الفاقد ← الإتاحة للبيع عبر ATP. الجدول يوضع موضع EMICP من كل محطة:</p>
+<table>
+<thead><tr><th>المحطة القياسية</th><th>ما يقابلها في EMICP</th><th>الحكم</th></tr></thead>
+<tbody>
+<tr><td>توقع الطلب (Forecast)</td><td>مستند متعدد المنتجات بفترة وإصدارات</td><td>موجود — لكن كتلة واحدة بلا مربعات زمنية</td></tr>
+<tr><td>موازنة طلب/عرض (S&amp;OP)</td><td>اعتماد المبيعات لخطة الإنتاج خطة‑خطة</td><td>جزئي — تفاوض ثنائي بلا مراجعة دورية ولا قياس دقة توقع</td></tr>
+<tr><td>MPS مع خصم مخزون FG</td><td>الخطة تُعبأ بكامل كمية الـForecast</td><td><b>مفقود — أخطر فجوة مفاهيمية حالية</b></td></tr>
+<tr><td>MRP: صافي الاحتياج للمواد</td><td>تخصيص على مستوى الكود (أُصلح في الحزم)</td><td>موجود منذ Schema 12</td></tr>
+<tr><td>BOM / الوصفة</td><td>إدخال يدوي كل دورة (قرار تصميم معلن)</td><td>مفقود عمدًا — بكلفة موثقة أدناه</td></tr>
+<tr><td>مهل التوريد ومخزون الأمان</td><td>شراء تفاعلي بعد النقص المؤكد فقط، حتى الصفر</td><td>مفقود</td></tr>
+<tr><td>الرقابة المالية على الشراء</td><td>اعتماد قبل الالتزام (Verified) — يُقفل بعد التوريد</td><td>نصف الرقابة: لا مطابقة بعد الاستلام</td></tr>
+<tr><td>الفحص والإفراج (جودة الأغذية)</td><td>أُلغي بقرار المالك</td><td><b>فجوة تنظيمية لمصنع أغذية — انظر ح4</b></td></tr>
+<tr><td>الدفعات والصلاحية وFEFO</td><td>لا أرقام دفعات للمواد ولا تواريخ صلاحية</td><td>مفقود</td></tr>
+<tr><td>الفاقد والعائد (Yield/Scrap)</td><td>فرق الخطة/الفعلي بلا سبب ولا تصنيف</td><td>مفقود</td></tr>
+<tr><td>ATP والوعد للعملاء</td><td>متاح = مستلم − محجوز − محظور، بلا طلبات بيع</td><td>جزئي — لا مستند طلب زبون إطلاقًا</td></tr>
+<tr><td>فحص الطاقة (RCCP)</td><td>خط الإنتاج حقل نصي حر</td><td>مفقود</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>ثانيًا: أخطاء المفهوم — مرتبة بالخطورة</h2>
+
+<div class="card">
+<div class="finding-head"><h3>ح1) الإنتاج يُخطط بكامل التوقع دون خصم مخزون المنتج الجاهز <span class="sev critical">حرج — إنتاج زائد مضمون</span></h3></div>
+<div class="grid3">
+<div class="cell now"><b>EMICP الآن</b>جدول الخطة يعبئ كمية الإنتاج تلقائيًا بكامل كمية الـForecast، ولا مكان في المفهوم كله يطرح «المتاح للبيع» الموجود فعلًا في مخزن المنتج النهائي. لديك 3000 كرتون متاحة وتوقعت 5000؟ النظام يقترح إنتاج 5000.</div>
+<div class="cell std"><b>الممارسة القياسية</b>جدول الإنتاج الرئيسي (MPS) يوازن العرض والطلب انطلاقًا من «مخزون البداية»: كمية الإنتاج = التوقع − المتاح الجاهز − الإنتاج المجدول. هذا حرفيًا نفس منطق «صافي النقص» الذي أصلحناه للمواد الأولية — لكنه مفقود في طابق المنتج النهائي.</div>
+<div class="cell fix"><b>التوصية</b>عند إعداد جدول الخطط: اعرض بجانب كل منتج «المتاح حاليًا» وعبّئ الكمية المقترحة = التوقع − المتاح (مع سماح التعديل). خطوة واحدة تمنع أغلى خطأ في المصنع: إنتاج ما هو موجود أصلًا — وأثره مضاعف في منتج قابل للتلف.</div>
+</div>
+<p class="src">المصدر: أدبيات MPS — الجدولة تبدأ من مخزون البداية وتوازن العرض والطلب في مربعات زمنية (OptiProERP، Siemens، Wikipedia).</p>
+</div>
+
+<div class="card">
+<div class="finding-head"><h3>ح2) الوارد «القادم» يُحتسب مغطيًا للنقص حتى لو وصل بعد موعد الحاجة <span class="sev critical">حرج — تغطية وهمية زمنيًا</span></h3></div>
+<div class="grid3">
+<div class="cell now"><b>EMICP الآن</b>تحققت من الكود: نموذج الالتزام يشترط فقط أن يكون ETA بعد تاريخ الأوردر، ولا يقارنه أبدًا بتاريخ حاجة الإنتاج. أوردر يصل 25 سبتمبر لمادة يحتاجها الإنتاج 5 سبتمبر يجعل النقص «صفرًا» فور إنشائه، وتصمت البطاقة والجداول تمامًا.</div>
+<div class="cell std"><b>الممارسة القياسية</b>قاعدة صريحة في حساب صافي الاحتياج: «الوارد المجدول لا ينفع إلا إذا وصل قبل موعد استخدامه؛ أوردر يصل بعد يومين من بدء التشغيلة لا يُحتسب». التوقيت جزء من المعادلة لا زينة.</div>
+<div class="cell fix"><b>التوصية</b>خطوتان: (أ) تحذير أحمر في جدول الالتزامات حين ETA &gt; أقرب تاريخ حاجة للمادة، (ب) في حساب التخصيص، الوارد الذي يتأخر عن تاريخ الحاجة لا يغطي ذلك السجل — يظهر النقص «في موعده» حتى لو كان أوردر لاحق قادمًا.</div>
+</div>
+<p class="src">المصدر: <a href="https://craftybase.com/blog/gross-to-net-calculations-for-mrp/">Craftybase — Gross to Net MRP</a>.</p>
+</div>
+
+<div class="card">
+<div class="finding-head"><h3>ح3) الشراء تفاعلي حتى الصفر: لا مهل توريد ولا مخزون أمان ولا نقطة إعادة طلب <span class="sev critical">حرج — توقف خطوط شبه مؤكد</span></h3></div>
+<div class="grid3">
+<div class="cell now"><b>EMICP الآن</b>لا يوجد في المفهوم كله «مهلة توريد» للمورد ولا «مخزون أمان» للمادة. الشراء لا يتحرك إلا بعد أن يؤكد المخزن نقصًا فعليًا، والكمية المقترحة تسد النقص بالضبط إلى الصفر. أي تذبذب من المورد أو زيادة طلب مفاجئة = خط متوقف.</div>
+<div class="cell std"><b>الممارسة القياسية</b>نقطة إعادة الطلب = الاستهلاك خلال مهلة التوريد + مخزون الأمان؛ النظام ينبه للشراء «قبل» حدوث النقص لا بعده. ولمواد قابلة للتلف يوازن مخزون الأمان بين خطر التوقف وخطر انتهاء الصلاحية.</div>
+<div class="cell fix"><b>التوصية</b>حقلان في تعريف المادة: مهلة التوريد بالأيام + مخزون الأمان. النظام يحسب «تاريخ آخر يوم للطلب» = تاريخ الحاجة − المهلة، ويجعله بندًا في بطاقة مستحقات المشتريات، ويضيف مخزون الأمان لصافي النقص.</div>
+</div>
+<p class="src">المصادر: <a href="https://www.netsuite.com/portal/resource/articles/inventory-management/reorder-point-rop.shtml">NetSuite — Reorder Point</a>، <a href="https://www.mrpeasy.com/blog/what-is-reorder-point-and-reorder-point-formula/">MRPeasy</a>.</p>
+</div>
+
+<div class="card">
+<div class="finding-head"><h3>ح4) مصنع أغذية بلا أي بوابة فحص أو إفراج <span class="sev critical">حرج — تنظيمي وتجاري</span></h3></div>
+<div class="grid3">
+<div class="cell now"><b>EMICP الآن</b>بعد إلغاء دور الجودة (بقرارك للتبسيط — وأنا نفذته)، المسار الحالي: حليب يصل ← يُرحّل للرصيد فورًا ← يُنتج ← يصبح متاحًا للبيع، دون أن يوقّع أي إنسان أن الدفعة سليمة. واجبي المهني أن أرفع هذه تحديدًا كخطأ مفهوم لمصنع ألبان ومثلجات، لا كملاحظة تقنية.</div>
+<div class="cell std"><b>الممارسة القياسية</b>أنظمة سلامة الغذاء (HACCP / ISO 22000) في معامل الألبان والمثلجات تعتبر فحص المواد الواردة (الحليب خصوصًا) والإفراج عن دفعات المنتج نقاط تحكم أساسية، مع حق الحجز (Hold) قبل البيع. هذه متطلبات تراخيص وأسواق، لا رفاهية إجرائية.</div>
+<div class="cell fix"><b>التوصية</b>لا حاجة لإعادة «دور الجودة» كقسم — يكفي «فحص مدمج خفيف»: خانة إلزامية في نموذج الاستلام ونموذج استلام المنتج (سليم / حجز مع سبب) يوقعها المستلم نفسه، مع بقاء الحجز خارج المتاح. تحافظ على بساطتك وتغلق الفجوة التنظيمية.</div>
+</div>
+<p class="src">المصادر: <a href="https://agriculture.institute/quality-assurance/understanding-haccp-principles-dairy-safety/">HACCP لسلامة الألبان</a>، <a href="https://www.sciencedirect.com/science/article/abs/pii/S0956713517301871">دراسة ISO 22000 في مصنع مثلجات</a>.</p>
+</div>
+
+<div class="card">
+<div class="finding-head"><h3>ح5) لا أرقام دفعات ولا صلاحية ولا FEFO — والمواد حليب <span class="sev high">عالٍ</span></h3></div>
+<div class="grid3">
+<div class="cell now"><b>EMICP الآن</b>رصيد المادة رقم واحد مجمع؛ استلامان مختلفان يذوبان في نفس الرقم بلا تاريخ صلاحية ولا رقم دفعة. «الدفعة» موجودة كنص فقط عند الإنتاج الفعلي. لو ظهرت مشكلة في منتج مباع، لا طريق للرجوع إلى دفعة الحليب المسببة، ولا يعرف المخزن أي كمية تنتهي أولًا ليصرفها أولًا.</div>
+<div class="cell std"><b>الممارسة القياسية</b>الصناعات الغذائية تدير المخزون بقاعدة «الأقرب انتهاءً يُصرف أولًا» (FEFO)، وتتطلب أرقام دفعات وتواريخ صلاحية على المواد والمنتجات معًا — وهي أساس أي استدعاء (Recall) وأي تدقيق.</div>
+<div class="cell fix"><b>التوصية</b>ترقية سجل الاستلام إلى «دفعة مخزون»: رقم دفعة + تاريخ صلاحية عند الاستلام، والصرف للإنتاج يستهلك الأقرب انتهاءً، وربط دفعة المنتج بدفعات المواد المستهلكة (تتبع بخطوة واحدة للأمام والخلف).</div>
+</div>
+<p class="src">المصدر: <a href="https://www.mrpeasy.com/blog/fefo-first-expired-first-out/">MRPeasy — FEFO</a>.</p>
+</div>
+
+<div class="card">
+<div class="finding-head"><h3>ح6) غياب الوصفة (BOM) يجعل الاستهلاك والانحراف بلا معيار <span class="sev high">عالٍ — إعادة نظر بقرار سابق</span></h3></div>
+<div class="grid3">
+<div class="cell now"><b>EMICP الآن</b>«لا BOM» قرار معلن في متطلباتك الأصلية، وثمنه اتضح الآن أعمق من إعادة الإدخال: خصم الاستهلاك الذي أضفناه يقسم على «الكمية المدخلة يدويًا» — فإن أخطأ المدخل، أصبح الخطأ هو المعيار. ولا يمكن أبدًا قياس «هل استهلكنا أكثر من الوصفة؟» لأنه لا وصفة.</div>
+<div class="cell std"><b>الممارسة القياسية</b>في تصنيع الأغذية BOM هي الوصفة نفسها: تضمن ثبات المنتج، وتولّد الاحتياجات تلقائيًا لأي كمية، وتجعل انحراف الاستهلاك (فعلي مقابل معياري) قابلًا للقياس — وهو من أهم مؤشرات كلفة مصنع أغذية.</div>
+<div class="cell fix"><b>التوصية</b>حل وسط يحفظ بساطتك: «وصفة لكل منتج» = قائمة (مادة، كمية لكل وحدة منتج) يحررها الإنتاج مرة واحدة، وجدول الاحتياجات يتعبأ تلقائيًا منها (كمية الخطة × النسبة) ويبقى قابلًا للتعديل. الإدخال اليدوي يبقى متاحًا كاستثناء لا كقاعدة.</div>
+</div>
+<p class="src">المصادر: <a href="https://foodtech.folio3.com/blog/bill-of-materials-in-food-manufacturing/">BOM في الأغذية</a>، <a href="https://sgsystemsglobal.com/guides/material-consumption-recording/">تسجيل الاستهلاك المخطط مقابل الفعلي</a>.</p>
+</div>
+
+<div class="card">
+<div class="finding-head"><h3>ح7) لا طلبات بيع ولا استهلاك للتوقع: «المحجوز» رقم بلا سند <span class="sev high">عالٍ</span></h3></div>
+<div class="grid3">
+<div class="cell now"><b>EMICP الآن</b>الطلب الوحيد في النظام هو التوقع. لا يوجد مستند «طلب زبون»؛ حقل Reserved في مخزن المنتج يُكتب يدويًا بلا طلب خلفه، ولا شيء يقيس كم من التوقع تحول لمبيعات فعلية. والمتاح للبيع لقطة لحظية لا «وعد» يحتسب الإنتاج القادم.</div>
+<div class="cell std"><b>الممارسة القياسية</b>الطلبات الفعلية «تستهلك» التوقع (Forecast Consumption) فيظهر المتبقي غير المغطى، وATP يوعد الزبائن من المتاح + الإنتاج المجدول − الالتزامات القائمة، بمربعات زمنية.</div>
+<div class="cell fix"><b>التوصية</b>مستند «طلب بيع» مصغر (زبون، منتج، كمية، تاريخ تسليم) يحجز من المتاح تلقائيًا ويُخصم من توقع فترته — فيصبح Reserved محسوبًا لا مكتوبًا، وتظهر للمبيعات «تغطية التوقع» الحقيقية.</div>
+</div>
+<p class="src">المصادر: <a href="https://en.wikipedia.org/wiki/Available-to-promise">ATP — Wikipedia</a>، <a href="https://docs.oracle.com/en/applications/jd-edwards/supply-chain-manufacturing/9.2/eoarp/available-to-promise-calculation.html">حساب ATP — Oracle</a>.</p>
+</div>
+
+<div class="card">
+<div class="finding-head"><h3>ح8) الرقابة المالية نصفها الأول فقط: لا مطابقة بعد الاستلام <span class="sev med">متوسط</span></h3></div>
+<div class="grid3">
+<div class="cell now"><b>EMICP الآن</b>اعتماد المالية قبل الالتزام ممتاز (وأقفلناه بعد التوريد)، لكن الدورة تنتهي عند الاستلام: لا خطوة تطابق «ما طُلب» مع «ما استُلم» مع «فاتورة المورد» قبل الدفع، وحقل القيمة نص حر لا يُجمع ولا يُقارن.</div>
+<div class="cell std"><b>الممارسة القياسية</b>المطابقة الثلاثية (أمر الشراء × محضر الاستلام × الفاتورة) هي الضابط الرئيسي ضد الدفع الزائد والفواتير الوهمية، وتبدأ عند وصول فاتورة المورد.</div>
+<div class="cell fix"><b>التوصية</b>جعل القيمة رقمية (سعر وحدة × كمية)، وشاشة صغيرة للمالية بعد الاستلام: كمية PO مقابل كمية مستلمة مقابل فاتورة، بفرق ملون وقرار «صرف/تعليق». تكتمل بها الدورة المالية من طرفيها.</div>
+</div>
+<p class="src">المصدر: <a href="https://www.netsuite.com/portal/resource/articles/accounting/three-way-matching.shtml">NetSuite — Three-Way Matching</a>.</p>
+</div>
+
+<div class="card">
+<div class="finding-head"><h3>ح9) لا فاقد ولا عائد: فرق الخطة عن الفعلي يضيع بلا سبب <span class="sev med">متوسط</span></h3></div>
+<div class="grid3">
+<div class="cell now"><b>EMICP الآن</b>أنتجت 90 من خطة 100؟ يسجل الفعلي 90 وينتهي الأمر — لا سبب (عطل؟ تلف خلطة؟ نقص مواد؟) ولا تصنيف. وخصم الاستهلاك يفترض التناسب المثالي، فالفاقد الحقيقي في المواد (انسكاب، خلطة مرفوضة) غير مرئي كليًا.</div>
+<div class="cell std"><b>الممارسة القياسية</b>تسجيل الفعلي يرافقه فاقد بكمية وسبب، ومقارنة الاستهلاك الفعلي بالمعياري لكل تشغيلة هي أداة ضبط الكلفة الأولى في مصانع الأغذية.</div>
+<div class="cell fix"><b>التوصية</b>حقلان اختياريان في صف الفعلي: كمية فاقد + سبب من قائمة (عطل، تلف مواد، جودة خلطة، أخرى). يظهر الفاقد في الداشبورد ويغذي قضايا تلقائية عند تجاوز نسبة معينة.</div>
+</div>
+<p class="src">المصدر: <a href="https://sgsystemsglobal.com/guides/material-consumption-recording/">Planned vs Actual Ingredient Usage</a>.</p>
+</div>
+
+<div class="card">
+<div class="finding-head"><h3>ح10) التوقع كتلة واحدة بلا مربعات زمنية — وحقل «نوع الفترة» زينة <span class="sev med">متوسط</span></h3></div>
+<div class="grid3">
+<div class="cell now"><b>EMICP الآن</b>تحققت من الكود: حقل «يومي/أسبوعي/شهري» يُخزن ويُعرض فقط ولا يدخل في أي حساب. توقع شهر كامل رقم واحد، فالخطة والشراء والاستلام كلها «متى ما كان» داخل الشهر — والمثلجات منتج ذروات أسبوعية حادة صيفًا.</div>
+<div class="cell std"><b>الممارسة القياسية</b>MPS وATP يعملان بمربعات أسبوعية (أو شهرية) — التوقع يوزع على الفترات، ولكل فترة كمية إنتاج ومتاح للوعد، فيظهر عجز الأسبوع الحار حتى لو كان مجموع الشهر مغطى.</div>
+<div class="cell fix"><b>التوصية</b>عند اختيار «أسبوعي»: وزّع كمية كل منتج على أسابيع الفترة (بالتساوي افتراضًا مع سماح التعديل)، وتنتقل الأسابيع إلى الخطة وتواريخ الحاجة تلقائيًا. تفعيل حقيقي لحقل موجود أصلًا.</div>
+</div>
+<p class="src">المصدر: <a href="https://www.optiproerp.com/blog/inventory-management-101-master-production-schedule-mps-explained/">MPS — مربعات أسبوعية وشهرية</a>.</p>
+</div>
+
+<div class="card">
+<div class="finding-head"><h3>ح11) خط الإنتاج نص حر بلا طاقة: الاعتماد التجاري قد يعد بالمستحيل <span class="sev med">متوسط</span></h3></div>
+<div class="grid3">
+<div class="cell now"><b>EMICP الآن</b>«Line 1» مجرد كتابة؛ لا طاقة يومية للخط ولا فحص أن مجموع خطط الفترة الواحدة على نفس الخط ممكن أصلًا. المبيعات تعتمد كميات وتواريخ لا يعرف أحد إن كان الخط يتسع لها.</div>
+<div class="cell std"><b>الممارسة القياسية</b>فحص الطاقة التقريبي (RCCP) يختبر قابلية تنفيذ الجدول قبل اعتماده: حمل كل مورد إنتاجي مقابل طاقته المتاحة في الفترة، وإلا فالجدول وعد ورقي.</div>
+<div class="cell fix"><b>التوصية</b>تعريف الخطوط كقائمة بطاقة يومية لكل منتج (أو عامة)، وشريط تحذير في جدول الخطط: «حمل الخط في هذه الفترة 130٪» قبل إرسالها للمبيعات.</div>
+</div>
+<p class="src">المصدر: <a href="https://opess.ethz.ch/course/section-5-2/5-2-3c-rough-cut-capacity-planning-rccp/">RCCP — ETH Zürich</a>.</p>
+</div>
+
+<div class="card">
+<div class="finding-head"><h3>ح12) حلقة S&amp;OP بلا قياس: الإصدارات موجودة ودقة التوقع غير محسوبة <span class="sev med">متوسط — مكسب سهل</span></h3></div>
+<div class="grid3">
+<div class="cell now"><b>EMICP الآن</b>النظام الآن يملك كل المدخلات: توقع بإصدارات، فعلي، متاح — لكنه لا يحسب أبدًا «كم أصاب توقع المبيعات؟». فتتكرر أخطاء التقدير كل شهر بلا تعلم، ويبقى الاعتماد ثنائيًا لكل خطة بلا نظرة دورية واحدة للسلة كلها.</div>
+<div class="cell std"><b>الممارسة القياسية</b>دورة S&amp;OP شهرية: مراجعة الطلب ثم العرض ثم اجتماع توافق واحد، ومؤشر دقة التوقع (Forecast Accuracy) يُقاس ويُعرض ليتحسن التقدير دورة بعد دورة.</div>
+<div class="cell fix"><b>التوصية</b>بطاقة في داشبورد الإدارة: لكل منتج وفترة منتهية — التوقع مقابل الفعلي المنتج مقابل المتاح، ونسبة الدقة. صفر إدخال جديد؛ كلها بيانات موجودة.</div>
+</div>
+<p class="src">المصادر: <a href="https://www.sap.com/products/scm/integrated-business-planning/what-is-supply-chain-planning/sop-sales-operations.html">SAP — S&amp;OP</a>، <a href="https://www.anaplan.com/blog/sales-operations-planning-sop-guide/">Anaplan — S&amp;OP Guide</a>.</p>
+</div>
+
+<h2>ثالثًا: ما هو سليم مفاهيميًا ويستحق التثبيت <span class="sev ok">مُصادَق عليه</span></h2>
+<div class="card">
+<ul>
+<li><b>مسار واحد ببوابات ملزمة وملكية واضحة لكل قسم</b> — هذه هي فكرة EMICP الأصلية وهي صحيحة تمامًا كبديل عن الاتصالات الشفهية، وقد صمدت في كل الاختبارات.</li>
+<li><b>«اشترِ النقص المؤكد فقط»</b> — ضبط سليم يمنع الشراء العشوائي؛ ما ينقصه هو البعد الزمني ومخزون الأمان (ح2 وح3) لا إلغاء الفكرة.</li>
+<li><b>اعتماد المالية قبل الالتزام</b> — يعادل «اعتماد طلب الشراء» في الأنظمة الكبيرة، وممتاز أنه سابق للارتباط مع المورد؛ ينقصه النصف الثاني (ح8).</li>
+<li><b>حجب المواد عن المبيعات</b> — قرار حوكمة مشروع ومطبق بثبات.</li>
+<li><b>معاملة كل منتج في التوقع كطلبية مستقلة في الداشبورد</b> — يطابق واقع اختلاف مراحل المنتجات ويدعمه التخصيص الجديد.</li>
+<li><b>تخصيص المواد وخصم الاستهلاك (منذ الحزم الست)</b> — هذا هو جوهر منطق MRP الصحيح وقد أصبح موجودًا.</li>
+</ul>
+</div>
+
+<h2>رابعًا: خارطة الطريق المفاهيمية المقترحة</h2>
+<div class="card">
+<table>
+<thead><tr><th>#</th><th>الخطوة</th><th>تعالج</th><th>لماذا بهذا الترتيب</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>خصم مخزون FG عند التخطيط + تحذير ETA بعد تاريخ الحاجة</td><td>ح1 + ح2</td><td>أكبر أثر بأقل تغيير — كلاهما امتداد مباشر لمنطق التخصيص القائم</td></tr>
+<tr><td>2</td><td>فحص استلام مدمج خفيف (سليم/حجز) للمواد والمنتج</td><td>ح4</td><td>الفجوة التنظيمية لا تنتظر؛ الحل لا يعيد دورًا محذوفًا</td></tr>
+<tr><td>3</td><td>مهلة توريد + مخزون أمان في تعريف المادة</td><td>ح3</td><td>يحول الشراء من رد فعل إلى إنذار مبكر</td></tr>
+<tr><td>4</td><td>وصفة لكل منتج تولّد جدول الاحتياجات تلقائيًا</td><td>ح6 + يقلل الإدخال أكثر</td><td>يرفع جودة كل الحسابات اللاحقة (استهلاك، انحراف)</td></tr>
+<tr><td>5</td><td>دفعات وصلاحية وFEFO في المخزون</td><td>ح5</td><td>يبني على الفحص المدمج (2) ويكمل التتبع</td></tr>
+<tr><td>6</td><td>طلب بيع مصغر + تغطية التوقع + بطاقة دقة التوقع</td><td>ح7 + ح12</td><td>يغلق الحلقة تجاريًا ويبدأ التعلم الدوري</td></tr>
+<tr><td>7</td><td>مطابقة ما بعد الاستلام + طاقة الخطوط + الفاقد + المربعات الأسبوعية</td><td>ح8–ح11</td><td>طبقة النضج الثانية بعد استقرار الأساس</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>المصادر</h2>
+<div class="card src">
+<ul>
+<li><a href="https://craftybase.com/blog/gross-to-net-calculations-for-mrp/">Craftybase — Gross to Net MRP Formula</a> · <a href="https://usersolutions.com/blog/mrp-net-requirements-calculation">User Solutions — MRP Net Requirements</a> · <a href="https://docs.oracle.com/cd/E26401_01/doc.122/e48795/T478564T478850.htm">Oracle — Overview of MRP</a></li>
+<li><a href="https://www.optiproerp.com/blog/inventory-management-101-master-production-schedule-mps-explained/">OptiProERP — MPS Explained</a> · <a href="https://en.wikipedia.org/wiki/Master_production_schedule">Wikipedia — Master Production Schedule</a> · <a href="https://www.siemens.com/en-us/technology/master-production-schedule/">Siemens — MPS</a></li>
+<li><a href="https://www.netsuite.com/portal/resource/articles/accounting/three-way-matching.shtml">NetSuite — Three-Way Matching</a> · <a href="https://precoro.com/blog/why-implementing-3-way-matching-is-important/">Precoro — 3-Way Matching</a></li>
+<li><a href="https://agriculture.institute/quality-assurance/understanding-haccp-principles-dairy-safety/">HACCP Principles for Dairy Safety</a> · <a href="https://www.sciencedirect.com/science/article/abs/pii/S0956713517301871">ISO 22000 in an Ice Cream Company — ScienceDirect</a> · <a href="https://www.sciencedirect.com/science/article/pii/S1021949813001257">HACCP in a Chocolate Ice Cream Plant</a></li>
+<li><a href="https://www.netsuite.com/portal/resource/articles/inventory-management/reorder-point-rop.shtml">NetSuite — Reorder Point</a> · <a href="https://www.mrpeasy.com/blog/what-is-reorder-point-and-reorder-point-formula/">MRPeasy — Reorder Point Formula</a></li>
+<li><a href="https://www.mrpeasy.com/blog/fefo-first-expired-first-out/">MRPeasy — FEFO</a> · <a href="https://www.foodmanufacturing.com/supply-chain/article/22963729/mrpeasy-first-expired-first-out-what-is-fefo-in-food-manufacturing">Food Manufacturing — FEFO</a></li>
+<li><a href="https://foodtech.folio3.com/blog/bill-of-materials-in-food-manufacturing/">Folio3 — BOM in Food ERP</a> · <a href="https://www.foodmanufacturing.com/home/article/22961703/mrpeasy-why-growing-food-manufacturers-need-recipe-management">Recipe Management for Food Manufacturers</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Available-to-promise">Wikipedia — Available-to-Promise</a> · <a href="https://docs.oracle.com/en/applications/jd-edwards/supply-chain-manufacturing/9.2/eoarp/available-to-promise-calculation.html">Oracle JDE — ATP Calculation</a></li>
+<li><a href="https://opess.ethz.ch/course/section-5-2/5-2-3c-rough-cut-capacity-planning-rccp/">ETH Zürich — RCCP</a> · <a href="https://www.anaplan.com/blog/guide-to-rough-cut-capacity-planning/">Anaplan — RCCP Guide</a></li>
+<li><a href="https://sgsystemsglobal.com/guides/material-consumption-recording/">SG Systems — Planned vs Actual Ingredient Usage</a> · <a href="https://www.zycus.com/glossary/what-is-backflush-in-manufacturing">Zycus — Backflush</a></li>
+<li><a href="https://www.sap.com/products/scm/integrated-business-planning/what-is-supply-chain-planning/sop-sales-operations.html">SAP — S&amp;OP</a> · <a href="https://www.anaplan.com/blog/sales-operations-planning-sop-guide/">Anaplan — S&amp;OP Process Guide</a> · <a href="https://www.netstock.com/resources/food-beverage-optimize-planning/">Netstock — F&amp;B Demand &amp; Supply Planning</a></li>
+</ul>
+</div>
+
+<footer>
+كل ادعاء عن سلوك EMICP في هذا التقرير تم التحقق منه في كود النسخة الحالية (Schema 12) قبل توثيقه؛ والمقارنات المرجعية مستندة إلى المصادر المدرجة أعلاه. هذا التقرير يكمل تقرير الفحص التقني السابق (EMICP-audit-report.html) الذي عالجت بنوده الحزم الست.
+</footer>
+
+</div>
+</body>
+</html>
