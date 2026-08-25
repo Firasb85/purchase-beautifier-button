@@ -1,0 +1,595 @@
+<title>جاهزية EMICP للخادم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --ground: #f4f8f8;
+    --surface: #ffffff;
+    --surface-2: #eef4f4;
+    --line: #d3e0e1;
+    --line-soft: #e4edee;
+    --ink: #0e2a30;
+    --ink-2: #486065;
+    --ink-3: #6e868b;
+    --brand: #103f4a;
+    --accent: #1d7387;
+    --blocker: #a8412c;
+    --blocker-bg: #f7e7e3;
+    --warn: #96681a;
+    --warn-bg: #f8efdd;
+    --ready: #256d51;
+    --ready-bg: #e2f0ea;
+    --shadow: 0 1px 2px rgba(14, 42, 48, .05), 0 8px 24px -16px rgba(14, 42, 48, .28);
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0a1517;
+      --surface: #102125;
+      --surface-2: #16292e;
+      --line: #244046;
+      --line-soft: #1b3238;
+      --ink: #dfeced;
+      --ink-2: #9fb7bb;
+      --ink-3: #7b9498;
+      --brand: #7ec3d2;
+      --accent: #6bb8c9;
+      --blocker: #e79079;
+      --blocker-bg: #34201b;
+      --warn: #dfb35f;
+      --warn-bg: #2f2717;
+      --ready: #74c4a2;
+      --ready-bg: #16302a;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -18px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0a1517;
+    --surface: #102125;
+    --surface-2: #16292e;
+    --line: #244046;
+    --line-soft: #1b3238;
+    --ink: #dfeced;
+    --ink-2: #9fb7bb;
+    --ink-3: #7b9498;
+    --brand: #7ec3d2;
+    --accent: #6bb8c9;
+    --blocker: #e79079;
+    --blocker-bg: #34201b;
+    --warn: #dfb35f;
+    --warn-bg: #2f2717;
+    --ready: #74c4a2;
+    --ready-bg: #16302a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -18px rgba(0, 0, 0, .9);
+  }
+
+  html { direction: rtl; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans Arabic", "Segoe UI", system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.75;
+    font-size: 16.5px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px 96px; }
+  .prose { max-width: 68ch; }
+
+  /* ---- رأس ---- */
+  header.masthead {
+    padding: 72px 0 40px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 44px;
+  }
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .74rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+    display: block;
+  }
+  h1 {
+    font-size: clamp(2rem, 4.4vw, 3rem);
+    line-height: 1.2;
+    font-weight: 700;
+    margin: 0 0 18px;
+    text-wrap: balance;
+    letter-spacing: -.01em;
+  }
+  .lede { font-size: 1.12rem; color: var(--ink-2); margin: 0; max-width: 62ch; }
+  .stamp {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .78rem;
+    color: var(--ink-3);
+  }
+  .stamp b { color: var(--ink-2); font-weight: 600; }
+
+  /* ---- الحكم ---- */
+  .verdict {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-inline-start: 4px solid var(--warn);
+    border-radius: var(--radius);
+    padding: 26px 28px;
+    box-shadow: var(--shadow);
+    margin-bottom: 52px;
+  }
+  .verdict h2 { margin: 0 0 10px; font-size: 1.22rem; font-weight: 700; }
+  .verdict p { margin: 0 0 12px; color: var(--ink-2); }
+  .verdict p:last-child { margin-bottom: 0; }
+  .verdict strong { color: var(--ink); font-weight: 600; }
+
+  h2.section {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 64px 0 6px;
+    letter-spacing: -.005em;
+    text-wrap: balance;
+  }
+  .section-note { color: var(--ink-3); margin: 0 0 26px; font-size: .95rem; }
+
+  /* ---- بطاقة القياس ---- */
+  .scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+  .score {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 18px 16px;
+  }
+  .score h3 { margin: 0 0 12px; font-size: .93rem; font-weight: 600; color: var(--ink-2); }
+  .meter { height: 6px; border-radius: 99px; background: var(--surface-2); overflow: hidden; margin-bottom: 10px; }
+  .meter > i { display: block; height: 100%; border-radius: 99px; }
+  .score .val {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .score .cap { font-size: .8rem; color: var(--ink-3); display: block; margin-top: 6px; }
+  .s-ready .val, .s-ready .cap b { color: var(--ready); }
+  .s-warn  .val { color: var(--warn); }
+  .s-block .val { color: var(--blocker); }
+  .s-ready .meter > i { background: var(--ready); }
+  .s-warn  .meter > i { background: var(--warn); }
+  .s-block .meter > i { background: var(--blocker); }
+
+  /* ---- مقاييس ---- */
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line-soft); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .metric { background: var(--surface); padding: 16px 18px; }
+  .metric .n { font-family: "IBM Plex Mono", monospace; font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; display: block; }
+  .metric .l { font-size: .82rem; color: var(--ink-3); }
+
+  /* ---- بطاقة نتيجة ---- */
+  .finding {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .finding > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 14px; margin-bottom: 12px; }
+  .finding h3 { margin: 0; font-size: 1.08rem; font-weight: 600; flex: 1 1 320px; }
+  .chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .68rem;
+    letter-spacing: .06em;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .c-block { background: var(--blocker-bg); color: var(--blocker); }
+  .c-warn { background: var(--warn-bg); color: var(--warn); }
+  .c-ready { background: var(--ready-bg); color: var(--ready); }
+  .ref { font-family: "IBM Plex Mono", monospace; font-size: .72rem; color: var(--ink-3); }
+  .finding p { margin: 0 0 12px; color: var(--ink-2); }
+  .finding p:last-child { margin-bottom: 0; }
+  .finding strong { color: var(--ink); font-weight: 600; }
+  .fix {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    border-radius: 8px;
+    font-size: .93rem;
+  }
+  .fix b { color: var(--accent); font-weight: 600; }
+
+  code, .mono {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .87em;
+    background: var(--surface-2);
+    padding: 1px 6px;
+    border-radius: 5px;
+    direction: ltr;
+    display: inline-block;
+    unicode-bidi: embed;
+  }
+
+  /* ---- جدول ---- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: .93rem; min-width: 560px; }
+  th, td { text-align: right; padding: 12px 16px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { background: var(--surface-2); font-weight: 600; font-size: .84rem; color: var(--ink-2); white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ---- خطوات ---- */
+  ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 0; display: grid; gap: 12px; }
+  ol.steps > li {
+    counter-increment: s;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 24px 20px 24px;
+    position: relative;
+    padding-inline-start: 68px;
+  }
+  ol.steps > li::before {
+    content: counter(s, decimal-leading-zero);
+    position: absolute;
+    inset-inline-start: 22px;
+    top: 20px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  ol.steps h3 { margin: 0 0 6px; font-size: 1rem; font-weight: 600; }
+  ol.steps p { margin: 0; color: var(--ink-2); font-size: .95rem; }
+
+  ul.plain { padding-inline-start: 1.15em; margin: 0 0 12px; color: var(--ink-2); }
+  ul.plain li { margin-bottom: 6px; }
+  ul.plain strong { color: var(--ink); }
+
+  footer.end {
+    margin-top: 72px;
+    padding-top: 26px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-3);
+    font-size: .85rem;
+  }
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    header.masthead { padding-top: 48px; }
+    .finding, .verdict { padding: 18px 18px; }
+  }
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <span class="eyebrow">Server Readiness Audit · EMICP v54</span>
+  <h1>هل يصلح النظام لتسليمه لمطوّر يربطه بسيرفر الشركة؟</h1>
+  <p class="lede">فحص بنيوي كامل للنموذج التفاعلي قبل تسليمه: ما الذي ينتقل كما هو، وما الذي يجب أن يُعاد بناؤه، وما الذي يوقف الربط إن لم يُعالَج أولًا.</p>
+  <div class="stamp">
+    <span><b>الإصدار</b> v54 · Schema 24</span>
+    <span><b>حجم الكود</b> 7,853 سطرًا · 362 دالة</span>
+    <span><b>الاختبارات</b> 541 فحصًا خضراء</span>
+    <span><b>التاريخ</b> 2026-08-23</span>
+  </div>
+</header>
+
+<div class="verdict">
+  <h2>الحكم باختصار</h2>
+  <p><strong>نعم، سلّمه — لكن سلّمه كمواصفة لا ككود إنتاج.</strong> النظام في حالة جيدة بشكل غير معتاد لنموذج بُني كله في المتصفح: أكثر من نصف منطقه قابل للنقل إلى الخادم بلا لمس الواجهة، ومعه جداول تفويض مركزية و541 فحصًا تصف السلوك المتوقع سطرًا بسطر. هذا يوفّر على المطوّر أسابيع من الأسئلة.</p>
+  <p><strong>لكن سبعة أمور لا يجوز أن تنتقل كما هي</strong>، وثلاثة منها ليست تحسينات بل مخاطر حقيقية: تجزئة كلمة المرور، وتوليد المعرفات في العميل، وغياب التحكّم بالتزامن. لو رُبط النظام بالخادم دون معالجتها، ستظهر المشكلة بعد الإطلاق لا قبله — وهذا أسوأ توقيت.</p>
+  <p>الرسالة الصحيحة للمطوّر: <strong>«هذا هو سلوك النظام المطلوب، مثبتًا باختبارات. أعد بناء الطبقة الخلفية عليه، ولا تنقل هذه السبعة.»</strong></p>
+</div>
+
+<h2 class="section">مقياس الجاهزية</h2>
+<p class="section-note">تقديري لكل محور، مبني على قياس فعلي للكود لا على انطباع.</p>
+
+<div class="scores">
+  <div class="score s-ready">
+    <h3>فصل المنطق عن الواجهة</h3>
+    <div class="meter"><i style="width:72%"></i></div>
+    <span class="val">72٪</span>
+    <span class="cap">158 دالة نقية + 99 تقرأ الحالة فقط. 85 دالة فقط تلمس الواجهة.</span>
+  </div>
+  <div class="score s-ready">
+    <h3>مواصفة التفويض</h3>
+    <div class="meter"><i style="width:85%"></i></div>
+    <span class="val">85٪</span>
+    <span class="cap">97 مدخلًا في ثلاثة جداول مركزية، جاهزة كعقد للواجهة البرمجية.</span>
+  </div>
+  <div class="score s-ready">
+    <h3>تغطية السلوك بالاختبارات</h3>
+    <div class="meter"><i style="width:80%"></i></div>
+    <span class="val">80٪</span>
+    <span class="cap">541 فحصًا تصف المسار كاملًا — مواصفة قبول جاهزة.</span>
+  </div>
+  <div class="score s-warn">
+    <h3>نموذج البيانات</h3>
+    <div class="meter"><i style="width:55%"></i></div>
+    <span class="val">55٪</span>
+    <span class="cap">العلاقات سليمة، لكن المال نص حر والمرفقات داخل السجل.</span>
+  </div>
+  <div class="score s-block">
+    <h3>الأمان</h3>
+    <div class="meter"><i style="width:22%"></i></div>
+    <span class="val">22٪</span>
+    <span class="cap">كل الرقابة في المتصفح، والتجزئة ليست تشفيرية.</span>
+  </div>
+  <div class="score s-block">
+    <h3>تعدد المستخدمين</h3>
+    <div class="meter"><i style="width:15%"></i></div>
+    <span class="val">15٪</span>
+    <span class="cap">لا تحكّم بالتزامن، والمعرفات تُولَّد في العميل.</span>
+  </div>
+</div>
+
+<h2 class="section">ما قِسته فعلًا</h2>
+<p class="section-note">أرقام مأخوذة من الكود مباشرة، لا تقديرات.</p>
+
+<div class="metrics">
+  <div class="metric"><span class="n">362</span><span class="l">دالة</span></div>
+  <div class="metric"><span class="n">158</span><span class="l">نقية تمامًا</span></div>
+  <div class="metric"><span class="n">85</span><span class="l">تلمس الواجهة</span></div>
+  <div class="metric"><span class="n">792</span><span class="l">سطرًا في معالج النماذج</span></div>
+  <div class="metric"><span class="n">596</span><span class="l">سطرًا في معالج النقر</span></div>
+  <div class="metric"><span class="n">97</span><span class="l">قاعدة تفويض</span></div>
+  <div class="metric"><span class="n">24</span><span class="l">نسخة مخطط مع ترحيلات</span></div>
+  <div class="metric"><span class="n">541</span><span class="l">فحصًا خضراء</span></div>
+</div>
+
+<h2 class="section">١ · عوائق تُعالَج قبل الربط</h2>
+<p class="section-note">سبعة بنود لا يجوز نقلها كما هي. كل واحد منها يظهر بعد الإطلاق لا قبله، وهذا ما يجعله خطرًا لا تحسينًا.</p>
+
+<div class="finding">
+  <header>
+    <h3>تجزئة كلمة المرور ليست تشفيرية</h3>
+    <span class="chip c-block">عائق</span>
+    <span class="ref">hashPassword() · السطر 986</span>
+  </header>
+  <p>الدالة الحالية خوارزمية <span class="mono">djb2</span> — دالة توزيع سريعة صُمّمت لجداول التجزئة لا لحماية كلمات المرور. تُعكس بالقوة الغاشمة في ثوانٍ، وبلا مِلح، ونتيجتها 32 بت فقط.</p>
+  <p>هذا مقبول في نموذج يعمل بلا إنترنت على جهاز واحد — <strong>وغير مقبول إطلاقًا</strong> في نظام يخزّن بيانات مصنع على خادم شركة.</p>
+  <div class="fix"><b>الإجراء:</b> لا تنقل الدالة. استخدم <span class="mono">bcrypt</span> أو <span class="mono">argon2id</span> على الخادم، والتحقق لا يحدث في المتصفح إطلاقًا. اعتبر كل كلمات المرور الحالية باطلة وأعد تعيينها عند الإطلاق.</div>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>المعرّفات تُولَّد في العميل وتتصادم</h3>
+    <span class="chip c-block">عائق</span>
+    <span class="ref">createId() · السطر 285</span>
+  </header>
+  <p>المعرّف هو الطابع الزمني بالملّي ثانية مضافًا إليه عدّاد يدور من 0 إلى 99. على جهاز واحد هذا كافٍ. مع خمسة مستخدمين يسجّلون في نفس اللحظة، احتمال التصادم ليس نظريًا — بل شبه مؤكد خلال أسابيع.</p>
+  <p>والأسوأ أن التصادم لا يظهر كخطأ: سجل يستبدل سجلًا آخر بصمت، أو تُربط دفعة إنتاج بأمر شراء ليس لها.</p>
+  <div class="fix"><b>الإجراء:</b> المعرّف من قاعدة البيانات — تسلسل أو <span class="mono">UUIDv7</span>. العميل يرسل الطلب ويستقبل المعرّف، ولا يخترعه.</div>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>لا تحكّم بالتزامن — آخر من يكتب يفوز</h3>
+    <span class="chip c-block">عائق</span>
+    <span class="ref">saveState() · السطر 892</span>
+  </header>
+  <p>النظام بُني لمستخدم واحد، فالحفظ يكتب <strong>الحالة كاملة</strong> في كل مرة. عند الربط بخادم يعمل عليه سبعة أقسام، سيناريو يومي: الإنتاج يفتح خطة الشهر، ومخزن المنتج النهائي يفتحها في نفس اللحظة، كلاهما يحفظ — والثاني يمحو عمل الأول بلا إشعار لأحد.</p>
+  <p>هذه أخطر مشكلة في القائمة، لأنها تُفقد بيانات ولا تترك أثرًا يدلّ على ما حدث.</p>
+  <div class="fix"><b>الإجراء:</b> قفل تفاؤلي: كل سجل يحمل رقم نسخة، والتحديث يشترط تطابق النسخة وإلا يُرفض برسالة «عُدِّل السجل من قسم آخر — حدّث وأعد المحاولة». والكتابة تصير سطرًا سطرًا لا حالةً كاملة.</div>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>كل الرقابة تعيش في المتصفح</h3>
+    <span class="chip c-block">عائق</span>
+    <span class="ref">FORM_ROLES · ACTION_ROLES · issueVisibleToRole · redactForSales</span>
+  </header>
+  <p>إخفاء المواد الأولية عن المبيعات، وحدود كل دور، وحراسة كل نموذج — كلها تُطبَّق في جافاسكربت داخل متصفح المستخدم. أي شخص يفتح أدوات المطوّر يستطيع تعطيلها كلها في دقيقة.</p>
+  <p>هذا سليم تمامًا لنموذج تجريبي. لكنه يعني أن <strong>الخادم يجب أن يعيد تطبيق كل قاعدة من الصفر</strong>، ولا يثق بالواجهة في أي شيء.</p>
+  <div class="fix"><b>الإجراء:</b> الخبر الجيد أن الجداول الثلاثة تصلح كعقد جاهز: 97 قاعدة مكتوبة في مكان واحد. حوّلها إلى وسيط تفويض على الخادم، واجعل استعلام المبيعات لا يُرجع أعمدة المواد أصلًا بدل إخفائها بعد الإرسال.</div>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>المرفقات مخزَّنة داخل السجل نفسه</h3>
+    <span class="chip c-block">عائق</span>
+    <span class="ref">quotation.dataUrl · السطر 5510</span>
+  </header>
+  <p>كل كوتيشن يُحوَّل إلى <span class="mono">base64</span> ويُحفظ داخل صف أمر الشراء، بحد أقصى 1.5 ميغابايت للملف. عشرون أمر شراء بمرفقاتها = نحو 30 ميغابايت داخل جدول واحد، تُقرأ كلها في كل استعلام.</p>
+  <p>في قاعدة بيانات حقيقية هذا يقتل الأداء تدريجيًا بلا سبب ظاهر، ويجعل النسخ الاحتياطي أثقل عشرات المرات مما يجب.</p>
+  <div class="fix"><b>الإجراء:</b> تخزين كائنات منفصل (S3 أو ما يعادله داخل الشركة)، والسجل يحمل رابطًا وحجمًا ونوعًا فقط. وترفع الحدّ من 1.5 ميغابايت لأنه قيد متصفح لا قيد عمل.</div>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>قيمة أمر الشراء نص حر لا رقم</h3>
+    <span class="chip c-block">عائق</span>
+    <span class="ref">commitment.amount</span>
+  </header>
+  <p>الحقل يقبل <span class="mono">"لم تُدخل قيمة"</span> كقيمة صالحة. أي أن عمود المال في النظام ليس رقمًا، ولا يحمل عملة، ولا دقة عشرية محددة.</p>
+  <p>هذا يمنع أي جمع أو تقرير مالي موثوق، وسيقاوم أي محاولة لربطه بنظام محاسبي لاحقًا.</p>
+  <div class="fix"><b>الإجراء:</b> <span class="mono">DECIMAL(18,3)</span> مع عمود عملة منفصل، والحقل الفارغ يصير <span class="mono">NULL</span> لا نصًا. لا تستخدم <span class="mono">FLOAT</span> للمال إطلاقًا.</div>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>التواريخ بلا منطقة زمنية</h3>
+    <span class="chip c-block">عائق</span>
+    <span class="ref">currentTimestamp() · السطر 4694</span>
+  </header>
+  <p>الطابع الزمني يُخزَّن نصًا بالتوقيت المحلي للجهاز <span class="mono">"2026-08-23 14:20"</span> بلا أي إشارة للمنطقة. الخوادم تعمل غالبًا بـ UTC.</p>
+  <p>النتيجة المتوقعة: إنتاج سُجّل الساعة 11 مساءً يظهر في تقرير اليوم التالي، وحسابات «المتأخر عن موعده» تنزاح ثلاث ساعات.</p>
+  <div class="fix"><b>الإجراء:</b> خزّن <span class="mono">TIMESTAMPTZ</span> بـ UTC، واعرض بتوقيت المصنع. القاعدة: التخزين بـ UTC دائمًا، والتحويل عند العرض فقط.</div>
+</div>
+
+<h2 class="section">٢ · أمور تُعالَج أثناء الربط</h2>
+<p class="section-note">لا توقف الربط، لكن تركها يورث دَينًا يظهر بعد شهور.</p>
+
+<div class="finding">
+  <header>
+    <h3>لا توجد طبقة نطاق مستقلة</h3>
+    <span class="chip c-warn">إعادة هيكلة</span>
+    <span class="ref">معالج النماذج 792 سطرًا · معالج النقر 596 سطرًا</span>
+  </header>
+  <p>القواعد موزّعة بين 158 دالة نقية (وهذا ممتاز) ومعالجَين ضخمين يفعل كل منهما كل شيء: يقرأ النموذج، ويتحقق، ويحسب، ويكتب، ويعرض رسالة. المنطق الحقيقي محبوس داخل معالج حدث لا يمكن استدعاؤه من الخادم.</p>
+  <p>هذا يعني أن قواعد مثل «مجموع الأسابيع يساوي هدف الخطة» و«لا موافقة مالية بلا كوتيشن» ستُكتب <strong>مرتين</strong>: مرة هنا ومرة على الخادم — ونسختان من القاعدة تعنيان أنهما ستفترقان.</p>
+  <div class="fix"><b>الإجراء:</b> استخرج القواعد إلى دوال نقية تأخذ بيانات وتُرجع نتيجة، بلا DOM وبلا تخزين. عندها تعمل الدالة نفسها في المتصفح للتحقق الفوري وعلى الخادم للتحقق الملزِم. 44٪ من الدوال بهذا الشكل أصلًا — الطريق نصفه مقطوع.</div>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>سقوف تحذف التاريخ بصمت</h3>
+    <span class="chip c-warn">فقدان بيانات</span>
+    <span class="ref">audit ≤ 200 · materialMoves ≤ 400</span>
+  </header>
+  <p>سجل الأحداث يحتفظ بآخر 200 حدث فقط، وحركات المواد بآخر 400. ما قبلها يُحذف نهائيًا. في مصنع نشط تُستهلك 200 حدث خلال أيام.</p>
+  <p>السقفان مبرران في نموذج يعيش في ذاكرة متصفح محدودة. لكن سجل أحداث يُحذف تلقائيًا <strong>ليس سجل أوديت</strong> — وهذا ما يطلبه المدقّق أولًا.</p>
+  <div class="fix"><b>الإجراء:</b> احذف السقفين عند الانتقال. سجل الأوديت في قاعدة البيانات يُضاف إليه ولا يُحذف منه أبدًا، وتُدار ضخامته بالتقسيم الزمني لا بالحذف.</div>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>الحفظ الكامل بدل الكتابة الجزئية</h3>
+    <span class="chip c-warn">أداء</span>
+    <span class="ref">withBatchedSave — حلٌّ مؤقت</span>
+  </header>
+  <p>قِسته اليوم: اعتماد 300 خطة كان يستغرق 5.2 ثانية لأن كل سطر يُسلسل الحالة كاملة. جمعتُ الكتابات في حفظة واحدة فنزل إلى 52 مللي ثانية — لكن هذا علاج للعَرَض.</p>
+  <p>الحد المعماري باقٍ: كتابة الحالة كاملة لا تتوسّع. مع 139 منتجًا × 12 شهرًا وسنوات من السجلات، سيعود البطء.</p>
+  <div class="fix"><b>الإجراء:</b> تختفي المشكلة من جذرها عند الانتقال، لأن الكتابة تصير سطرًا واحدًا في جدول واحد. لا تنقل نمط «احفظ كل شيء».</div>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>الحذف يفحص الارتباط لكن بلا حذف ناعم</h3>
+    <span class="chip c-warn">نموذج بيانات</span>
+    <span class="ref">delete-master · السطر 7453</span>
+  </header>
+  <p>الحذف محمي فعلًا: لا يُحذف منتج مرتبط بمستند أو خطة أو دفعة. هذا سليم. لكن الحذف حين يقع يكون نهائيًا، ولا يوجد نمط موحّد لـ «معطَّل» مقابل «محذوف» عبر كل الجداول.</p>
+  <div class="fix"><b>الإجراء:</b> عمود <span class="mono">deleted_at</span> في كل جدول تعريفات، والاستعلامات تستثنيه. المصنع يحتاج أن يقرأ تاريخ منتج أوقفه قبل سنتين.</div>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>أربعة نماذج خارج جدول التفويض</h3>
+    <span class="chip c-warn">توثيق</span>
+    <span class="ref">login · issue · issue-close · submit-dialog</span>
+  </header>
+  <p>ثلاثة منها مقصودة: الدخول مفتوح بطبيعته، وتسجيل مشكلة متاح لأي قسم عمدًا، وإغلاق القضية يُحرَس <strong>على مستوى القضية</strong> لا الدور — تُقارن هوية المستخدم بالقسم المسؤول والمُبلِّغ المسجَّلين في تلك القضية بالذات.</p>
+  <p>لكن هذا الاستثناء غير مكتوب في الجدول، فقد يقرأه المطوّر كثغرة ويسدّها بالخطأ — أو يقرأه كنسيان وينسخه.</p>
+  <div class="fix"><b>الإجراء:</b> وثّق النمطين صراحة: تفويض بالدور، وتفويض بعلاقة المستخدم بالسجل. الثاني هو النمط الصحيح لمعظم النظام على المدى البعيد.</div>
+</div>
+
+<h2 class="section">٣ · ما ينتقل كما هو</h2>
+<p class="section-note">هذا ما يجعل التسليم مجديًا بدل البدء من الصفر.</p>
+
+<div class="finding">
+  <header>
+    <h3>جداول التفويض المركزية</h3>
+    <span class="chip c-ready">أصل جاهز</span>
+  </header>
+  <p>97 قاعدة في ثلاثة جداول: 32 نموذجًا، و57 إجراءً، و8 مسارات رفع. هذه ليست شيفرة واجهة — إنها <strong>مواصفة تفويض للواجهة البرمجية</strong> مكتوبة سلفًا. يقرأها المطوّر ويحوّلها إلى وسيط على الخادم في يوم.</p>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>541 فحصًا تصف السلوك المطلوب</h3>
+    <span class="chip c-ready">أصل جاهز</span>
+  </header>
+  <p>هذه أثمن ما في التسليم. كل قاعدة عمل مكتوبة كفحص بالعربية يصف الحالة المتوقعة: التسلسل الإلزامي، وحدود الأدوار، وحساب الصافي الزمني، وقواعد التجميد. هي <strong>مواصفة قبول</strong> يستطيع المطوّر أن يبني عليها اختبارات الخادم مباشرة.</p>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>خريطة الهجرة موجودة أصلًا</h3>
+    <span class="chip c-ready">أصل جاهز</span>
+  </header>
+  <p>أربع وعشرون نسخة مخطط، كل انتقال بينها مكتوب في مكان واحد. هذا يعني أن شكل البيانات وتطوّره موثّقان، وأن تصميم جداول قاعدة البيانات يبدأ من مرجع لا من تخمين.</p>
+</div>
+
+<div class="finding">
+  <header>
+    <h3>المنطق الحسابي منفصل فعلًا</h3>
+    <span class="chip c-ready">أصل جاهز</span>
+  </header>
+  <p>الصافي الزمني للمواد، ونقطة إعادة الطلب، وتحويل وحدة الشراء، والحد الأدنى للطلب، وحساب الانحراف والدقة، والتقسيم بالكرتون الكامل — كلها دوال نقية تأخذ أرقامًا وتُرجع أرقامًا. تُنقل إلى الخادم بالنسخ تقريبًا.</p>
+</div>
+
+<h2 class="section">٤ · ما أسلّمه للمطوّر</h2>
+<p class="section-note">ترتيب مقصود: كل خطوة تعتمد على ما قبلها.</p>
+
+<ol class="steps">
+  <li>
+    <h3>استخراج طبقة النطاق أولًا — قبل أي كود خادم</h3>
+    <p>انقل قواعد العمل إلى وحدات نقية بلا DOM وبلا تخزين. هذه الخطوة وحدها تمنع ازدواج القواعد بين الواجهة والخادم، وهي أرخص ما تُنفَّذ الآن وأغلى ما يُصلَح لاحقًا.</p>
+  </li>
+  <li>
+    <h3>صمّم المخطط من الترحيلات الأربع والعشرين</h3>
+    <p>الجداول والعلاقات مستنتجة من بنية الحالة الحالية. عالج في هذه الخطوة: المعرّفات، والمال، والتواريخ، والحذف الناعم، وعمود النسخة لكل جدول.</p>
+  </li>
+  <li>
+    <h3>حوّل جداول التفويض إلى وسيط على الخادم</h3>
+    <p>97 قاعدة جاهزة. أضف إليها التفويض بالعلاقة (من يملك السجل)، ولا تعتمد على أي إخفاء يجري في الواجهة.</p>
+  </li>
+  <li>
+    <h3>ابنِ المصادقة من جديد</h3>
+    <p>bcrypt أو argon2، جلسات على الخادم، وتبديل الأدوار يصير صلاحية حقيقية لا زرًا في الشريط العلوي. كل كلمات المرور الحالية باطلة.</p>
+  </li>
+  <li>
+    <h3>حوّل الاختبارات الـ541 إلى اختبارات تكامل</h3>
+    <p>نفس الحالات، لكن عبر الواجهة البرمجية بدل DOM. عندها يصير لديك دليل قابل للتشغيل أن الخادم يتصرف كما تصرّف النموذج الذي وافقتَ عليه.</p>
+  </li>
+  <li>
+    <h3>أبقِ الواجهة الحالية كواجهة أولى</h3>
+    <p>لا تُعد بناءها. استبدل قراءة وكتابة التخزين المحلي باستدعاءات الواجهة البرمجية، واحتفظ بكل شاشة وكل نص كما هو. هذا يوفّر شهورًا ويُبقي الفريق على واجهة اعتاد عليها ودرّبته عليها.</p>
+  </li>
+</ol>
+
+<h2 class="section">جدول القرار السريع</h2>
+<p class="section-note">ما يُنقل، وما يُعاد بناؤه، وما يُحذف.</p>
+
+<div class="tablewrap">
+<table>
+  <thead>
+    <tr><th>المكوّن</th><th>القرار</th><th>السبب</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>جداول التفويض</td><td>يُنقل ويُوسَّع</td><td>مواصفة جاهزة، تنقصها فقط قواعد الملكية</td></tr>
+    <tr><td>الدوال الحسابية النقية</td><td>يُنقل كما هو</td><td>بلا اعتماد على المتصفح</td></tr>
+    <tr><td>الاختبارات</td><td>يُحوَّل</td><td>نفس الحالات عبر الواجهة البرمجية</td></tr>
+    <tr><td>الواجهة والقاموس</td><td>يُبقى</td><td>يُستبدل مصدر البيانات فقط</td></tr>
+    <tr><td>الترحيلات</td><td>يُقرأ كمرجع</td><td>خريطة تطوّر البيانات</td></tr>
+    <tr><td>معالجا النماذج والنقر</td><td>يُعاد بناؤه</td><td>منطق محبوس داخل معالج حدث</td></tr>
+    <tr><td>saveState</td><td>يُحذف</td><td>نمط لا يتوسّع</td></tr>
+    <tr><td>createId</td><td>يُحذف</td><td>يتصادم مع عدة مستخدمين</td></tr>
+    <tr><td>hashPassword</td><td>يُحذف</td><td>ليست تجزئة تشفيرية</td></tr>
+    <tr><td>مرفقات base64</td><td>يُحذف</td><td>تخزين كائنات بدلها</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 class="section">تقدير الجهد</h2>
+<p class="section-note">تقدير هندسي لمطوّر واحد متمكّن، لا وعد بموعد.</p>
+
+<div class="tablewrap">
+<table>
+  <thead>
+    <tr><th>المرحلة</th><th class="num">التقدير</th><th>الخطر الأكبر</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>استخراج طبقة النطاق</td><td class="num">٢–٣ أسابيع</td><td>قاعدة تُنسى فتفترق النسختان</td></tr>
+    <tr><td>المخطط والهجرة</td><td class="num">١–٢ أسبوع</td><td>المال والتواريخ إن عولجا متأخرًا</td></tr>
+    <tr><td>التفويض والمصادقة</td><td class="num">١–٢ أسبوع</td><td>الاكتفاء بالتفويض بالدور</td></tr>
+    <tr><td>ربط الواجهة بالخادم</td><td class="num">٢–٣ أسابيع</td><td>التزامن وحالات التعارض</td></tr>
+    <tr><td>الاختبارات والتشغيل التجريبي</td><td class="num">١–٢ أسبوع</td><td>لا شيء يُذكر — الاختبارات موجودة</td></tr>
+  </tbody>
+</table>
+</div>
+
+<footer class="end">
+  تقرير جاهزية بنيوي لنظام EMICP التفاعلي · الإصدار v54 · مخطط 24 · 541 فحصًا خضراء · أُعِدّ في 23 آب 2026.<br>
+  كل رقم في هذا التقرير مقيس من الكود مباشرة. التقديرات الزمنية وحدها اجتهاد هندسي.
+</footer>
+
+</div>
