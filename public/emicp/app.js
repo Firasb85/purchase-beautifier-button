@@ -150,7 +150,7 @@
 
   var protectedPages = {
     sales: ["materials", "rawRequirements", "packingRequirements", "requirements", "procurement", "rmStock", "receipts", "packingStock", "packingReceipts", "finance", "fgReceipts", "audit", "executive", "execution"],
-    procurement: ["forecasts", "weekly", "execution", "fgReceipts", "fgStock"],
+    procurement: ["forecasts", "weekly", "execution", "fgReceipts", "fgStock", "materials", "rawRequirements", "packingRequirements", "requirements"],
     rmWarehouse: ["forecasts", "weekly", "execution", "fgReceipts", "fgStock", "finance"],
     fgWarehouse: ["forecasts", "materials", "rawRequirements", "packingRequirements", "requirements", "procurement", "rmStock", "receipts", "packingStock", "packingReceipts", "finance"],
     admin: ["forecasts", "materials", "rawRequirements", "packingRequirements", "requirements", "procurement", "rmStock", "receipts", "packingStock", "packingReceipts", "execution", "fgReceipts", "finance"]
@@ -215,7 +215,7 @@
     "edit-weekly": ["production", "sales"],
     "approve-weekly": ["production", "fgWarehouse"], "approve-units": ["production", "fgWarehouse"],
     "set-strategic": ["production", "procurement"],
-    "new-commitment": ["procurement"], "advance-commitment": ["procurement"], "cancel-commitment": ["procurement"],
+    "new-commitment": ["procurement"], "advance-commitment": ["procurement"], "cancel-commitment": ["procurement"], "download-procurement-file": ["procurement"],
     "confirm-supply": ["procurement"], "quotation-file": ["procurement"], "late-quotation-file": ["procurement"],
     "finance-po-decision": ["finance"],
     "confirm-stock": ["rmWarehouse"], "save-stock": ["rmWarehouse"], "new-waste": ["rmWarehouse"], "download-strategic-template": ["production"],
@@ -263,7 +263,7 @@
     permissions: {
       sales: ["home", "workflow", "approvals", "agentOrders", "forecasts", "weekly", "monthly", "reports", "fgView", "issues"],
       production: ["home", "workflow", "approvals", "forecasts", "weekly", "monthly", "rawRequirements", "packingRequirements", "execution", "reports", "fgView", "issues"],
-      procurement: ["home", "workflow", "requirements", "procurement", "rmStock", "packingStock", "reports", "issues"],
+      procurement: ["home", "workflow", "procurement", "rmStock", "packingStock", "reports", "issues"],
       rmWarehouse: ["home", "workflow", "materials", "rmStock", "receipts", "packingStock", "packingReceipts", "reports", "issues"],
       fgWarehouse: ["home", "workflow", "approvals", "weekly", "fgReceipts", "fgStock", "reports", "issues"],
       finance: ["home", "approvals", "finance", "forecasts", "monthly", "rmStock", "procurement", "fgStock", "reports", "audit", "issues"],
@@ -291,6 +291,7 @@
     financeChecks: [],
     warehouseReviews: {},
     materialDispatches: {},
+    procurementReviews: {},
     audit: []
   };
 
@@ -375,6 +376,10 @@
     if (!result.backupSettings || typeof result.backupSettings !== "object" || Array.isArray(result.backupSettings)) result.backupSettings = clone(defaultState.backupSettings);
     if (!result.warehouseReviews || typeof result.warehouseReviews !== "object" || Array.isArray(result.warehouseReviews)) result.warehouseReviews = {};
     if (!result.materialDispatches || typeof result.materialDispatches !== "object" || Array.isArray(result.materialDispatches)) result.materialDispatches = {};
+    if (!result.procurementReviews || typeof result.procurementReviews !== "object" || Array.isArray(result.procurementReviews)) result.procurementReviews = {};
+    if (result.permissions && result.permissions.procurement) {
+      result.permissions.procurement = result.permissions.procurement.filter(function (page) { return page !== "requirements" && page !== "materials"; });
+    }
     ["reminderEnabled", "autoEnabled"].forEach(function (key) { result.backupSettings[key] = Boolean(result.backupSettings[key]); });
     ["autoStartDate", "lastAutoBackupDate", "lastManualBackupAt", "lastReminderDate"].forEach(function (key) { if (typeof result.backupSettings[key] !== "string") result.backupSettings[key] = ""; });
     // Preserve the old single-dashboard preference for the account that was active
@@ -1595,8 +1600,19 @@
     if (packingReview && packingReview.status === "confirmed") {
       steps.push({ number: 7, role: "production", page: "packingRequirements", title: "حوّل ملف مواد التغليف للمشتريات", copy: "أكد المخزن ملف مواد التغليف؛ اضغط «تحويل للمشتريات».", count: 1 });
     }
+
+    // تنبيهات الإنتاج بملاحظات وتعديلات المشتريات
+    var rawProcRev = state.procurementReviews && state.procurementReviews.raw;
+    if (rawProcRev && ((rawProcRev.notes && rawProcRev.notes.length) || rawProcRev.changesCount)) {
+      steps.push({ number: 8, role: "production", page: "rawRequirements", title: "ملاحظات المشتريات (مواد أولية)", copy: (rawProcRev.notes && rawProcRev.notes.length ? rawProcRev.notes.slice(0, 2).join(" · ") : "تعديلات جديدة من المشتريات باللون الأحمر."), count: (rawProcRev.notes && rawProcRev.notes.length) || 1 });
+    }
+    var packingProcRev = state.procurementReviews && state.procurementReviews.packing;
+    if (packingProcRev && ((packingProcRev.notes && packingProcRev.notes.length) || packingProcRev.changesCount)) {
+      steps.push({ number: 8, role: "production", page: "packingRequirements", title: "ملاحظات المشتريات (مواد تغليف)", copy: (packingProcRev.notes && packingProcRev.notes.length ? packingProcRev.notes.slice(0, 2).join(" · ") : "تعديلات جديدة من المشتريات باللون الأحمر."), count: (packingProcRev.notes && packingProcRev.notes.length) || 1 });
+    }
+
     var awaitingSupply = forecastsAwaitingSupplyConfirm().length;
-    if (awaitingSupply) steps.push({ number: 6, role: "procurement", page: "requirements", title: "أكّد إمكانية التوريد", copy: "راجع النقص المحسوب مع مدد التوريد وأكّد قدرتك على التغطية قبل تثبيت المستند.", count: awaitingSupply });
+    if (awaitingSupply) steps.push({ number: 6, role: "procurement", page: "procurement", title: "أكّد إمكانية التوريد", copy: "راجع النقص المحسوب مع مدد التوريد وأكّد قدرتك على التغطية قبل تثبيت المستند.", count: awaitingSupply });
     var weeklyTargets = pendingWeeklyPlanTargets().length;
     if (weeklyTargets) steps.push({ number: 9, role: "production", page: "weekly", title: "قسّم الخطة الشهرية أسابيع", copy: "بعد التثبيت: وزّع كمية كل منتج وشهر على أسابيعه وأرسلها للمبيعات.", count: weeklyTargets });
     var weeklyAwaitingSales = state.weeklyPlans.filter(function (plan) { return plan.status === "awaiting_sales"; }).length;
@@ -1606,7 +1622,7 @@
     var weeklyAwaitingFg = state.weeklyPlans.filter(function (plan) { return plan.status === "awaiting_approvals" && !planFullyApprovedByRole(plan, "fgWarehouse"); }).length;
     if (weeklyAwaitingFg) steps.push({ number: 12, role: "fgWarehouse", page: "approvals", title: "اعتماد مخزن FG للخطة الأسبوعية", copy: "مخزن المنتج النهائي يعتمد الخطة ليجهز الاستلام والتخزين.", count: weeklyAwaitingFg });
     var directShortages = purchasableShortages().length;
-    if (directShortages) steps.push({ number: 13, role: "procurement", page: "requirements", title: "اطلب المواد الناقصة", copy: "النقص وصلك مباشرة من رفع رصيد المخزن؛ أمر الشراء النهائي قرارك ولا يُتجاوز — حدد المورد وPO والكمية وETA.", count: directShortages });
+    if (directShortages) steps.push({ number: 13, role: "procurement", page: "procurement", title: "اطلب المواد الناقصة", copy: "النقص وصلك من الإنتاج؛ صدّر ملف المواد أو التغليف وعدّل عليه وارفعه أو أصدر أمر شراء.", count: directShortages });
     var financePending = state.commitments.filter(function (item) {
       return item.financeApproval && item.financeApproval.status === "pending" && item.status !== "cancelled" && item.status !== "received";
     }).length;
@@ -2276,6 +2292,7 @@
     var runs = pendingProductionEntries().length;
     return pageHead("مساحة الإنتاج", "فحص القدرة والتثبيت ثم المواد والتنفيذ", "رد على Forecast حتى التثبيت، احسب المواد شهرًا بشهر، اعتمد النتيجة، وسجل الفعلي.", '<button class="btn btn-secondary" type="button" data-page="forecasts">Forecast الوارد</button><button class="btn btn-primary" type="button" data-page="rawRequirements">احتياجات المواد الأولية</button><button class="btn btn-secondary" type="button" data-page="packingRequirements">احتياجات مواد التغليف</button>') + boundary() +
       (homeWidgetVisible("kpis") ? '<section class="grid summary-grid">' + summary("Forecast بانتظار الرد", String(submitted), "تحرير الكميات وإرسال الرد", submitted ? "amber" : "", "F") + summary("Forecast معدّل قابل للتحميل", String(modifiedForecasts), "زر التحميل في صفحة Forecast", modifiedForecasts ? "blue" : "", "↓") + summary("خطط أسبوعية بانتظار اعتمادي", String(approvals), "اعتماد الإنتاج للخطة الأسبوعية", approvals ? "amber" : "", "✔") + summary("مواد فيها نقص", String(shortages), "بعد رفع رصيد المخزن", shortages ? "red" : "", "M") + '</section>' : "") +
+      renderProcurementFeedbackCard() +
       (homeWidgetVisible("materials") ? renderProductionMaterialSnapshot() : "");
   }
 
@@ -2284,9 +2301,10 @@
     var transit = state.commitments.filter(function (item) { return item.status === "in_transit"; }).length;
     var canBuy = procurementReleaseExists();
     var viewButton = '<button class="btn btn-beautify" type="button" data-action="toggle-procurement-view" aria-pressed="' + (procurementPolished ? "true" : "false") + '"><span aria-hidden="true">✦</span>' + (procurementPolished ? "العرض المعتاد" : "تحسين العرض") + '</button>';
-    return pageHead("مساحة المشتريات", "التزم بالنقص المؤكد فقط", "لا تصل الكميات هنا قبل مراجعة الإنتاج وتأكيد المخزن وتحويل الإنتاج للملف.", viewButton + (canBuy ? '<button class="btn btn-primary" type="button" data-action="new-commitment">التزام شراء</button>' : "")) + boundary() +
+    return pageHead("مساحة المشتريات", "التزم بالنقص المؤكد فقط", "صدّر ملف المواد الأولية والتغليف، عدّل عليهما في Excel، وارفعهما للتطبيق مباشرة.", viewButton + (canBuy ? '<button class="btn btn-primary" type="button" data-action="new-commitment">التزام شراء</button>' : "")) + boundary() +
       (homeWidgetVisible("kpis") ? '<section class="grid summary-grid">' + summary("طلبات بنقص", String(shortage), "Confirmed Shortage", shortage ? "red" : "", "M") + summary("In Transit", String(transit), "شحنات قادمة", "amber", "T") + summary("نقص جاهز للشراء", String(purchasableShortages().length), "بعد اعتماد الإنتاج والمخزن", "amber", "✔") + summary("PO مفتوح", String(state.commitments.length), "التزامات فعالة", "blue", "P") + '</section>' : "") +
-      ((homeWidgetVisible("requirements") || homeWidgetVisible("commitments")) ? '<section class="grid two-col"><div>' + (homeWidgetVisible("requirements") ? renderRequirementCard(true) : "") + '</div><div>' + (homeWidgetVisible("commitments") ? renderCommitmentCard(true) : "") + '</div></section>' : "");
+      renderProcurementFeedbackCard() +
+      ((homeWidgetVisible("requirements") || homeWidgetVisible("commitments")) ? '<section class="grid"><div>' + renderCommitmentCard(true) + '</div></section>' : "");
   }
 
   function renderRmWarehouseHome() {
@@ -3248,7 +3266,12 @@
     var materialRows = function (category) { return state.materials.filter(function (item) { return (item.category || "raw") === category; }).map(function (item) {
       var materialState = !item.stockConfirmed ? "pending" : materialShortage(item) > 0 ? "shortage" : "available";
       var master = rawMasterByCode(item.materialCode, category);
-      return '<tr><td><strong>' + esc(item.id) + '</strong><br><small>' + esc(item.forecastId || "") + '</small>' + (item.productCode ? '<br><small><span class="code-chip">' + esc(item.productCode) + '</span></small>' : "") + '</td><td><strong class="code-chip">' + esc(item.materialCode) + '</strong><br>' + esc(item.material) + '<br>' + materialCategoryBadge(master ? master.category : "raw") + '</td><td><span class="number">' + formatNumber(item.required) + '</span> ' + esc(item.unit || "") + (item.consumed > 0 ? '<br><small>استُهلك ' + formatNumber(item.consumed) + ' · متبقٍ ' + formatNumber(effectiveRequired(item)) + '</small>' : "") + '</td><td>' + requirementMonthsCell(item) + '</td><td>' + (item.stockConfirmed ? '<span class="number">' + formatNumber(materialAllocatedAvailable(item)) + '</span>' : "—") + '</td><td><span class="number">' + formatNumber(item.inbound) + '</span></td><td>' + (item.stockConfirmed ? '<span class="number">' + formatNumber(materialShortage(item)) + '</span>' : "—") + '</td><td>' + stepDate("الطلب", item.createdAt) + (item.stockConfirmedAt ? stepDate("رفع الرصيد", item.stockConfirmedAt) : "") + '</td><td>' + statusByValue(materialState) + '</td></tr>';
+      var procMod = (state.commitments || []).find(function (c) {
+        var m = state.materials.find(function (mat) { return mat.id === c.materialId; });
+        return m && normalizeCode(m.materialCode) === normalizeCode(item.materialCode) && c.procurementModified;
+      });
+      var procBadge = procMod ? '<br><small style="color:#b91c1c;font-weight:700;background:#fee2e2;padding:1px 5px;border-radius:4px;border:1px solid #ef4444;display:inline-block;margin-top:2px;">🔴 تعديل مشتريات: ' + formatNumber(procMod.orderQty) + ' ' + esc(procMod.purchaseUnit || item.unit || "") + (procMod.procurementNote ? ' (' + esc(procMod.procurementNote) + ')' : "") + '</small>' : "";
+      return '<tr><td><strong>' + esc(item.id) + '</strong><br><small>' + esc(item.forecastId || "") + '</small>' + (item.productCode ? '<br><small><span class="code-chip">' + esc(item.productCode) + '</span></small>' : "") + '</td><td><strong class="code-chip">' + esc(item.materialCode) + '</strong><br>' + esc(item.material) + '<br>' + materialCategoryBadge(master ? master.category : "raw") + procBadge + '</td><td><span class="number">' + formatNumber(item.required) + '</span> ' + esc(item.unit || "") + (item.consumed > 0 ? '<br><small>استُهلك ' + formatNumber(item.consumed) + ' · متبقٍ ' + formatNumber(effectiveRequired(item)) + '</small>' : "") + '</td><td>' + requirementMonthsCell(item) + '</td><td>' + (item.stockConfirmed ? '<span class="number">' + formatNumber(materialAllocatedAvailable(item)) + '</span>' : "—") + '</td><td><span class="number">' + formatNumber(item.inbound) + '</span></td><td>' + (item.stockConfirmed ? '<span class="number">' + formatNumber(materialShortage(item)) + '</span>' : "—") + '</td><td>' + stepDate("الطلب", item.createdAt) + (item.stockConfirmedAt ? stepDate("رفع الرصيد", item.stockConfirmedAt) : "") + '</td><td>' + statusByValue(materialState) + '</td></tr>';
     }).join(""); };
     var requirementsTable = function (category) {
       var rows = materialRows(category);
@@ -3264,9 +3287,9 @@
       var title = isPacking ? "احتياجات مواد التغليف" : "احتياجات المواد الأولية";
       var targetWarehouse = isPacking ? "مستودع مواد التغليف" : "مستودع المواد الأولية";
       var action = state.role === "production" ? '<button class="btn btn-primary" type="button" data-action="new-material" data-category="' + category + '">فتح ملف الاحتياجات</button>' : "";
-      return pageHead("Material Requirement", title, "صفحة مستقلة لهذا المستودع فقط. احفظ الملف ثم أرسله إلى " + targetWarehouse + ".", action) + boundary() + requirementsTable(category);
+      return pageHead("Material Requirement", title, "صفحة مستقلة لهذا المستودع فقط. احفظ الملف ثم أرسله إلى " + targetWarehouse + ".", action) + boundary() + renderProcurementFeedbackCard(category) + requirementsTable(category);
     }
-    return pageHead("Material Requirement", "ملفا احتياج منفصلان حسب المستودع", "اختر صفحة المواد الأولية أو صفحة مواد التغليف من القائمة.", "") + boundary() + requirementsTable("raw") + requirementsTable("packing");
+    return pageHead("Material Requirement", "ملفا احتياج منفصلان حسب المستودع", "اختر صفحة المواد الأولية أو صفحة مواد التغليف من القائمة.", "") + boundary() + renderProcurementFeedbackCard() + requirementsTable("raw") + requirementsTable("packing");
   }
 
   // المخزون الاستراتيجي: حد لكل مادة يضعه الإنتاج والمشتريات، مع تنبيه عند نزول الرصيد تحته.
@@ -3452,31 +3475,57 @@
       else if (withActions && item.status === "received") action = status("اكتمل الاستلام", "green");
       if (cancellable) action += '<button class="btn btn-danger btn-sm" type="button" data-action="cancel-commitment" data-id="' + esc(item.id) + '">إلغاء</button>';
       var datesCell = stepDate("إنشاء الطلب", item.createdAt) + (item.inTransitAt ? stepDate("بدء التوريد", item.inTransitAt) : "") + (receipt && receipt.receivedAt ? stepDate("استلام المخزن", receipt.receivedAt) : "");
+
+      var modBadge = item.procurementModified ? '<br><span class="badge red" style="background:#fee2e2;color:#b91c1c;border:1px solid #ef4444;font-size:10px;padding:1px 5px;border-radius:4px;display:inline-block;margin-top:2px;">تعديل المشتريات</span>' : "";
+      var qtyHtml = item.procurementModified
+        ? '<strong class="number procurement-cell-red" style="background:#fee2e2;color:#b91c1c;padding:3px 6px;border-radius:4px;border:1.5px solid #ef4444;display:inline-block;">' + formatNumber(item.qty) + ' ' + esc(material ? material.unit || "" : "") + '</strong>' + (item.orderQty ? '<br><small style="color:#b91c1c;font-weight:700;">بوحدة الشراء: ' + formatNumber(item.orderQty) + ' ' + esc(item.purchaseUnit || "") + '</small>' : "")
+        : '<strong class="number">' + formatNumber(item.qty) + '</strong> ' + esc(material ? material.unit || "" : "");
+      var etaHtml = item.procurementModified
+        ? '<time class="need-date procurement-cell-red" style="background:#fee2e2;color:#b91c1c;padding:2px 5px;border-radius:4px;border:1px solid #ef4444;">' + esc(item.eta || "—") + '</time>'
+        : '<time class="need-date">' + esc(item.eta || "—") + '</time>';
+      var noteHtml = item.procurementNote ? '<br><small style="color:#b91c1c;font-weight:700;">ملاحظة: ' + esc(item.procurementNote) + '</small>' : "";
+
       return '<tr>'
-        + '<td><strong>' + esc(item.id) + '</strong>' + (material ? '<br><small><span class="code-chip">' + esc(material.materialCode) + '</span> ' + esc(material.material) + '</small>' : '<br><small>' + esc(item.materialId) + '</small>') + '</td>'
+        + '<td><strong>' + esc(item.id) + '</strong>' + (material ? '<br><small><span class="code-chip">' + esc(material.materialCode) + '</span> ' + esc(material.material) + '</small>' : '<br><small>' + esc(item.materialId) + '</small>') + modBadge + '</td>'
         + '<td>' + esc(item.supplier) + '</td>'
         + '<td><strong>' + esc(item.po) + '</strong></td>'
-        + '<td><strong class="number">' + formatNumber(item.qty) + '</strong> ' + esc(material ? material.unit || "" : "") + '</td>'
+        + '<td>' + qtyHtml + '</td>'
         + '<td>' + (material ? requirementMonthsCell(material) : "—") + '</td>'
         + '<td>' + esc(item.orderDate || "غير مسجل") + '</td>'
-        + '<td><time class="need-date">' + esc(item.eta || "—") + '</time></td>'
-        + '<td>' + esc(item.amount || "—") + '</td>'
+        + '<td>' + etaHtml + '</td>'
+        + '<td>' + esc(item.amount || "—") + noteHtml + '</td>'
         + '<td>' + (item.financeApproval ? (item.financeApproval.status === "approved" ? status("موافقة المالية ✓", "green") : item.financeApproval.status === "rejected" ? status("مرفوض", "red") : status("بانتظار المالية", "amber")) : "—") + '<br>' + quotationLink(item) + '</td>'
         + '<td>' + statusByValue(item.status) + '</td>'
         + '<td>' + datesCell + (item.financeApproval && item.financeApproval.at ? stepDate("قرار المالية", item.financeApproval.at) : "") + '</td>'
         + (withActions ? '<td>' + action + '</td>' : "")
         + '</tr>';
     }).join("");
-    var head = '<tr><th>الأوردر والمادة</th><th>المورد</th><th>PO</th><th>الكمية</th><th>أشهر الحاجة</th><th>تاريخ الأوردر</th><th>ETA</th><th>القيمة</th><th>المالية والكوتيشن</th><th>التوريد</th><th>تواريخ الخطوة</th>' + (withActions ? '<th>الإجراء</th>' : "") + '</tr>';
-    var content = body ? '<div class="table-wrap commitments-table"><table><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>' : empty("لا توجد التزامات", "أنشئ التزامًا للنقص المؤكد من المخزن.");
-    return card("Procurement Commitment", "جدول كامل: المورد وPO والكمية وأشهر الحاجة وETA والتوريد", content);
+    var head = '<tr><th>الأوردر والمادة</th><th>المورد</th><th>PO</th><th>الكمية</th><th>أشهر الحاجة</th><th>تاريخ الأوردر</th><th>ETA</th><th>القيمة والملاحظات</th><th>المالية والكوتيشن</th><th>التوريد</th><th>تواريخ الخطوة</th>' + (withActions ? '<th>الإجراء</th>' : "") + '</tr>';
+    var content = body ? '<div class="table-wrap commitments-table"><table><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>' : empty("لا توجد التزامات", "أنشئ التزامًا للنقص المؤكد أو ارفع ملف المشتريات المعدّل.");
+    return card("Procurement Commitment", "جدول كامل: المورد وPO والكمية وأشهر الحاجة وETA والتوريد — أي تعديل من المشتريات باللون الأحمر", content);
   }
 
   function renderProcurement() {
     // المالية ترى هذه الشاشة للاطلاع فقط: كانت أزرارها كاملة أمامها فتنشئ الأمر وتوافق عليه وتنفّذه.
     var canAct = state.role === "procurement" && procurementReleaseExists();
     var viewButton = '<button class="btn btn-beautify" type="button" data-action="toggle-procurement-view" aria-pressed="' + (procurementPolished ? "true" : "false") + '"><span aria-hidden="true">✦</span>' + (procurementPolished ? "العرض المعتاد" : "تحسين العرض") + '</button>';
-    return pageHead("Procurement Commitment", "التزامات الشراء المفتوحة", "لا تظهر طلبات شراء جديدة قبل تحويل الإنتاج للملف بعد مراجعة المخزن وتأكيده.", viewButton + (canAct ? '<button class="btn btn-primary" type="button" data-action="new-commitment">التزام جديد</button>' : "")) + boundary() + warehouseReviewCard("raw") + warehouseReviewCard("packing") + (state.role === "procurement" && !canAct ? card("بانتظار الإنتاج", "المخزن أكد الملف، لكنه لم يُحوّل بعد إلى المشتريات.", '<div class="form-note locked">الخطوة الحالية: الإنتاج يراجع الملف، يعيده للمخزن إن عدّل، أو يضغط «تحويل للمشتريات» بعد التأكيد.</div>') : "") + renderStrategicCard(false) + renderCommitmentCard(canAct);
+    var actions = viewButton;
+    if (state.role === "procurement") {
+      actions += '<button class="btn btn-secondary btn-sm" type="button" data-action="download-procurement-file" data-category="raw">تصدير ملف المواد الأولية</button>'
+        + '<label class="btn btn-primary btn-sm file-button">رفع ملف المواد الأولية المعدّل<input type="file" accept=".xlsx,.xls,.csv" data-action="import-procurement-file" data-category="raw"></label>'
+        + '<button class="btn btn-secondary btn-sm" type="button" data-action="download-procurement-file" data-category="packing">تصدير ملف مواد التغليف</button>'
+        + '<label class="btn btn-primary btn-sm file-button">رفع ملف مواد التغليف المعدّل<input type="file" accept=".xlsx,.xls,.csv" data-action="import-procurement-file" data-category="packing"></label>'
+        + (canAct ? '<button class="btn btn-secondary btn-sm" type="button" data-action="new-commitment">التزام يدوي</button>' : "");
+    }
+    return pageHead("Procurement Commitment", "التزامات الشراء وإدارة النقص", "صدّر ملف المواد الأولية ومواد التغليف، عدّل عليهما في Excel، ثم ارفعهما للتطبيق. التغييرات تظهر بالأحمر والملاحظات تُرسل للإنتاج.", actions)
+      + boundary()
+      + renderProcurementFeedbackCard()
+      + warehouseReviewCard("raw")
+      + warehouseReviewCard("packing")
+      + (state.role === "procurement" && !canAct ? card("بانتظار الإنتاج", "المخزن أكد الملف، لكنه لم يُحوّل بعد إلى المشتريات.", '<div class="form-note locked">الخطوة الحالية: الإنتاج يراجع الملف، يعيده للمخزن إن عدّل، أو يضغط «تحويل للمشتريات» بعد التأكيد.</div>') : "")
+      + renderTimePhasedCard()
+      + renderStrategicCard(false)
+      + renderCommitmentCard(canAct);
   }
 
   function renderRmStockCard(editable, category) {
@@ -4066,7 +4115,7 @@
   var HOME_DASHBOARD_WIDGETS = {
     sales: [{ key: "kpis", label: "ملخص Forecast والمبيعات" }, { key: "available", label: "المتاح للبيع" }, { key: "forecast", label: "متابعة مستندات Forecast" }],
     production: [{ key: "kpis", label: "ملخص القدرة والتنفيذ" }, { key: "materials", label: "لقطة احتياجات المواد" }],
-    procurement: [{ key: "kpis", label: "ملخص النقص والتوريد" }, { key: "requirements", label: "الاحتياجات والنقص" }, { key: "commitments", label: "التزامات الشراء" }],
+    procurement: [{ key: "kpis", label: "ملخص النقص والتوريد" }, { key: "commitments", label: "التزامات الشراء" }],
     rmWarehouse: [{ key: "kpis", label: "ملخص الرصيد والاستلام" }, { key: "stock", label: "رصيد المواد" }, { key: "waste", label: "التوالف" }],
     fgWarehouse: [{ key: "kpis", label: "ملخص المتاح والاستلام" }, { key: "stock", label: "رصيد المنتج النهائي" }],
     finance: [{ key: "kpis", label: "ملخص الرقابة المالية" }, { key: "finance", label: "قرارات وأوامر الشراء" }],
@@ -4677,7 +4726,7 @@
     var roleChoices = {
       sales: ["workflow", "agentOrders", "forecasts", "weekly", "monthly", "reports", "fgView", "issues"],
       production: ["workflow", "forecasts", "weekly", "monthly", "materials", "execution", "reports", "fgView", "issues"],
-      procurement: ["workflow", "requirements", "procurement", "rmStock", "packingStock", "reports", "issues"],
+      procurement: ["workflow", "procurement", "rmStock", "packingStock", "reports", "issues"],
       rmWarehouse: ["workflow", "materials", "rmStock", "receipts", "packingStock", "packingReceipts", "reports", "issues"],
       fgWarehouse: ["workflow", "weekly", "fgReceipts", "fgStock", "reports", "issues"],
       finance: ["finance", "monthly", "rmStock", "procurement", "fgStock", "reports", "audit", "issues"],
@@ -4888,6 +4937,209 @@
     if (state.role === "rmWarehouse" && review.status === "returned_warehouse") actions = '<button class="btn btn-primary btn-sm" type="button" data-action="warehouse-confirm" data-category="' + category + '">تأكيد ملف المخزن</button>';
     if (state.role === "production" && review.status === "confirmed") actions = '<button class="btn btn-primary btn-sm" type="button" data-action="warehouse-release" data-category="' + category + '">تحويل للمشتريات</button>';
     return card("ملف مراجعة المخزن — " + label, text + (review.at ? " · " + displayTimestamp(review.at) : ""), '<div class="form-note">أي تغيير في ملف Excel يظهر بخلفية حمراء لتسهيل المراجعة.</div>', actions);
+  }
+
+  // تصدير ملف المشتريات للمواد الأولية أو مواد التغليف
+  function downloadProcurementFile(category) {
+    category = category === "packing" ? "packing" : "raw";
+    var codes = [];
+    state.rawMaterials.filter(function (master) { return master.category === category && master.active !== false; }).forEach(function (master) {
+      var code = normalizeCode(master.code);
+      if (codes.indexOf(code) === -1) codes.push(code);
+    });
+    if (!codes.length) { showToast("لا توجد مواد مطلوبة في هذا القسم بعد.", "error"); return; }
+    var rows = [["material_code", "material_name", "unit", "need_month", "required_shortage", "order_qty", "supplier", "po", "order_date", "eta", "amount", "procurement_notes"]];
+    var count = 0;
+    codes.forEach(function (code) {
+      var plan = materialTimePhasedPlan(code);
+      var master = rawMasterByCode(code, category);
+      var sampleName = plan.material || (master && master.name) || code;
+      var sampleUnit = plan.unit || (master && master.unit) || "";
+      if (plan.rows && plan.rows.length) {
+        plan.rows.forEach(function (row) {
+          if (row.net > QTY_EPSILON) {
+            count += 1;
+            var buy = purchasePlanFor(code, row.net);
+            var existingCommitment = state.commitments.find(function (c) {
+              var m = state.materials.find(function (mat) { return mat.id === c.materialId; });
+              return m && normalizeCode(m.materialCode) === code && (c.needMonth === row.month || (!c.needMonth && c.needDate && c.needDate.startsWith(row.month)));
+            });
+            rows.push([
+              code, sampleName, sampleUnit, row.month,
+              Number(row.net),
+              { value: existingCommitment ? Number(existingCommitment.orderQty || existingCommitment.qty || 0) : Number(buy.orderQty), style: "red" },
+              { value: existingCommitment ? existingCommitment.supplier : (master && master.supplier || ""), style: "red" },
+              { value: existingCommitment ? existingCommitment.po : "", style: "red" },
+              { value: existingCommitment ? existingCommitment.orderDate : (row.orderBy || dateDaysFromNow(0)), style: "red" },
+              { value: existingCommitment ? existingCommitment.eta : (row.month + "-01"), style: "red" },
+              { value: existingCommitment ? existingCommitment.amount : "", style: "red" },
+              { value: existingCommitment ? (existingCommitment.procurementNote || "") : "", style: "red" }
+            ]);
+          }
+        });
+      } else {
+        var records = materialRecordsSameCode(code).filter(function (record) { return (record.category || "raw") === category; });
+        var shortage = records.reduce(function (sum, record) { return sum + materialShortage(record); }, 0);
+        if (shortage > 0) {
+          count += 1;
+          var buySimple = purchasePlanFor(code, shortage);
+          rows.push([
+            code, sampleName, sampleUnit, "—",
+            Number(shortage),
+            { value: Number(buySimple.orderQty), style: "red" },
+            { value: (master && master.supplier) || "", style: "red" },
+            { value: "", style: "red" },
+            { value: dateDaysFromNow(0), style: "red" },
+            { value: "", style: "red" },
+            { value: "", style: "red" },
+            { value: "", style: "red" }
+          ]);
+        }
+      }
+    });
+    if (!count) {
+      showToast("لا توجد نواقص مطلوبة للتصدير في هذا القسم.", "error");
+      return;
+    }
+    var filename = category === "packing" ? "EMICP-procurement-packaging-materials.xls" : "EMICP-procurement-raw-materials.xls";
+    if (downloadExcelXml(filename, rows)) {
+      showToast("تم تصدير ملف المشتريات. الخانات الحمراء قابلة للتعديل والملاحظات تُرسل للإنتاج.", "success");
+    }
+  }
+
+  // رفع ملف المشتريات المعدّل
+  async function importProcurementFile(file, category) {
+    category = category === "packing" ? "packing" : "raw";
+    var rows = await readSpreadsheetFile(file);
+    if (!rows.length) throw new Error("الملف فارغ أو بلا صفوف بيانات.");
+    var changed = 0, skipped = 0, stamp = currentTimestamp();
+    var notesList = [];
+    var changedCodes = [];
+    rows.forEach(function (row) {
+      var code = normalizeCode(firstField(row, ["material_code", "code", "كود_المادة", "كود"]));
+      var master = rawMasterByCode(code, category);
+      if (!code || !master) { skipped += 1; return; }
+      var records = materialRecordsSameCode(code).filter(function (record) { return (record.category || "raw") === category; });
+      if (!records.length) { skipped += 1; return; }
+      var month = String(firstField(row, ["need_month", "month", "شهر_الحاجة", "الشهر"]) || "").trim();
+      var orderQtyRaw = String(firstField(row, ["order_qty", "qty", "الكمية", "كمية_الشراء"]) || "").trim();
+      var supplier = String(firstField(row, ["supplier", "المورد", "اسم_المورد"]) || "").trim();
+      var po = String(firstField(row, ["po", "po_number", "رقم_po", "رقم_الطلب"]) || "").trim();
+      var orderDate = String(firstField(row, ["order_date", "تاريخ_الأوردر", "تاريخ_الطلب"]) || "").trim();
+      var eta = String(firstField(row, ["eta", "تاريخ_الوصول", "تاريخ_الوصول_المتوقع"]) || "").trim();
+      var amount = String(firstField(row, ["amount", "price", "القيمة", "المبلغ"]) || "").trim();
+      var note = String(firstField(row, ["procurement_notes", "notes", "ملاحظات", "ملاحظات_المشتريات", "ملاحظة"]) || "").trim();
+
+      if (!orderQtyRaw || !validNumber(orderQtyRaw, false)) { skipped += 1; return; }
+      var orderQty = Number(orderQtyRaw);
+      if (orderQty <= 0) { skipped += 1; return; }
+
+      var anchorMaterial = records.find(function (r) {
+        return month && r.monthlyQty && Number(r.monthlyQty[month] || 0) > 0;
+      }) || records[0];
+
+      var factor = master && Number(master.conversionFactor) > 0 ? Number(master.conversionFactor) : 1;
+      var purchaseUnit = master && master.purchaseUnit ? master.purchaseUnit : "";
+      var qty = roundQty(orderQty * factor);
+
+      var existingCommitment = state.commitments.find(function (c) {
+        var m = state.materials.find(function (mat) { return mat.id === c.materialId; });
+        return m && normalizeCode(m.materialCode) === code && (c.needMonth === month || (!c.needMonth && c.needDate && c.needDate.startsWith(month)));
+      });
+
+      if (existingCommitment) {
+        existingCommitment.orderQty = orderQty;
+        existingCommitment.qty = qty;
+        if (supplier) existingCommitment.supplier = supplier;
+        if (po) existingCommitment.po = po;
+        if (orderDate) existingCommitment.orderDate = orderDate;
+        if (eta) existingCommitment.eta = eta;
+        if (amount) existingCommitment.amount = amount;
+        if (note) existingCommitment.procurementNote = note;
+        existingCommitment.procurementModified = true;
+        existingCommitment.modifiedAt = stamp;
+      } else {
+        var commitmentId = createId("PC");
+        state.commitments.unshift({
+          id: commitmentId,
+          materialId: anchorMaterial.id,
+          supplier: supplier || (master && master.supplier) || "مورد معتمد",
+          po: po || ("PO-" + code + "-" + (month ? month.replace(/-/g, "") : "M")),
+          qty: qty,
+          orderQty: orderQty,
+          conversionFactor: factor,
+          purchaseUnit: purchaseUnit,
+          needMonth: month || "",
+          orderDate: orderDate || dateDaysFromNow(0),
+          eta: eta || (month ? month + "-01" : dateDaysFromNow(15)),
+          amount: amount || "لم تُدخل قيمة",
+          status: "submitted",
+          financeApproval: { status: "pending", note: "", at: "" },
+          quotation: null,
+          procurementNote: note,
+          procurementModified: true,
+          createdAt: stamp
+        });
+        anchorMaterial.inbound = roundQty(Number(anchorMaterial.inbound || 0) + qty);
+        state.rawReceipts.unshift({
+          id: createId("RR"), commitmentId: commitmentId,
+          materialCode: code, material: master.name,
+          qty: qty, received: 0, status: "expected",
+          postedToStock: false, expectedAt: stamp
+        });
+      }
+
+      if (changedCodes.indexOf(code) === -1) changedCodes.push(code);
+      if (note && notesList.indexOf(code + ": " + note) === -1) notesList.push(code + ": " + note);
+      changed += 1;
+    });
+
+    if (!changed) throw new Error("لم يُعدّل أي سطر. تحقق من أعمدة material_code و order_qty.");
+
+    if (!window.confirm("نتيجة ملف المشتريات:\nأسطر محدثة/مضافة: " + changed + "\nصفوف متجاوزة: " + skipped + (notesList.length ? "\nملاحظات للإنتاج: " + notesList.length : "") + "\n\nهل تريد حفظ التعديلات وإرسالها للإنتاج؟")) return;
+
+    state.procurementReviews[category] = {
+      status: "modified",
+      at: stamp,
+      by: roleName(state.role),
+      notes: notesList,
+      changedCodes: changedCodes,
+      changesCount: changed
+    };
+
+    addAudit("رفع المشتريات لملف " + (category === "packing" ? "مواد التغليف" : "المواد الأولية") + " المعدّل (" + changed + " بند) مع ملاحظات للإنتاج", roleName(state.role));
+    refresh("تم حفظ ملف المشتريات وتحديث التغييرات باللون الأحمر وإرسال الملاحظات إلى الإنتاج." + (skipped ? " تجاوز " + skipped + " صفًا." : ""));
+  }
+
+  // بطاقة تنبيه بملاحظات وتعديلات المشتريات
+  function renderProcurementFeedbackCard(category) {
+    var revs = state.procurementReviews || {};
+    var keys = category ? [category] : ["raw", "packing"];
+    var items = [];
+    keys.forEach(function (cat) {
+      var rev = revs[cat];
+      if (rev && ((rev.notes && rev.notes.length) || rev.changesCount)) {
+        items.push({
+          category: cat,
+          label: cat === "packing" ? "مواد التغليف" : "المواد الأولية",
+          rev: rev
+        });
+      }
+    });
+    if (!items.length) return "";
+    var content = items.map(function (entry) {
+      var notesHtml = (entry.rev.notes || []).map(function (n) {
+        return '<li style="color:#b91c1c;font-weight:700;margin-bottom:4px;">' + esc(n) + '</li>';
+      }).join("");
+      return '<div class="procurement-feedback-box" style="margin-bottom:12px;padding:14px;background:#fef2f2;border:1.5px solid #ef4444;border-radius:10px;">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+        + '<strong style="color:#991b1b;font-size:14px;">✦ تعديلات وملاحظات المشتريات على ' + esc(entry.label) + ' (' + entry.rev.changesCount + ' بند)</strong>'
+        + '<small style="color:#7f1d1d;font-weight:700;">' + displayTimestamp(entry.rev.at) + '</small>'
+        + '</div>'
+        + (notesHtml ? '<p style="margin:4px 0 6px;font-size:12px;color:#7f1d1d;font-weight:700;">الملاحظات المرسلة من المشتريات:</p><ul style="margin:0 0 0 20px;padding:0;">' + notesHtml + '</ul>' : '<p style="margin:0;color:#7f1d1d;font-size:12px;">تم تعديل الكميات والتواريخ وتظهر باللون الأحمر في الجداول.</p>')
+        + '</div>';
+    }).join("");
+    return card("تنبيه: ملاحظات وتعديلات المشتريات", "تظهر جميع التعديلات المنفذة من المشتريات باللون الأحمر في الجداول", content);
   }
 
   function parseSpreadsheetXml(text) {
@@ -7662,7 +7914,7 @@
   // نفس الحارس المركزي لمسارات الرفع والتغيير — الاستيراد يكتب في البيانات كالنماذج تمامًا.
   var CHANGE_ROLES = {
     "import-material": ["production"], "import-forecast": ["sales", "finance"], "import-sales-feedback": ["sales"], "import-production-review": ["production"], "import-weekly": ["production"], "import-strategic": ["production"],
-    "import-agent-orders": ["sales"], "import-master": ["admin"], "import-warehouse-file": ["rmWarehouse"],
+    "import-agent-orders": ["sales"], "import-master": ["admin"], "import-warehouse-file": ["rmWarehouse"], "import-procurement-file": ["procurement"],
     "quotation-file": ["procurement"], "late-quotation-file": ["procurement"], "logo-file": ["admin"]
   };
 
@@ -7760,6 +8012,13 @@
       var warehouseFile = event.target.files && event.target.files[0];
       if (!warehouseFile) return;
       importWarehouseFile(warehouseFile, event.target.getAttribute("data-category")).catch(function (error) { showToast(error.message || "تعذر قراءة ملف المخزن.", "error"); });
+      event.target.value = "";
+      return;
+    }
+    if (event.target.matches('[data-action="import-procurement-file"]')) {
+      var procurementFile = event.target.files && event.target.files[0];
+      if (!procurementFile) return;
+      importProcurementFile(procurementFile, event.target.getAttribute("data-category")).catch(function (error) { showToast(error.message || "تعذر قراءة ملف المشتريات.", "error"); });
       event.target.value = "";
       return;
     }
@@ -8501,6 +8760,7 @@
 
     if (action === "confirm-stock") { openStockForm(target.getAttribute("data-id"), target.getAttribute("data-category")); return; }
     if (action === "download-warehouse-file") { downloadWarehouseFile(target.getAttribute("data-category")); return; }
+    if (action === "download-procurement-file") { downloadProcurementFile(target.getAttribute("data-category")); return; }
     if (action === "warehouse-send" || action === "warehouse-return" || action === "warehouse-confirm" || action === "warehouse-release") {
       var warehouseCategory = target.getAttribute("data-category") === "packing" ? "packing" : "raw";
       var warehouseReview = state.warehouseReviews && state.warehouseReviews[warehouseCategory];

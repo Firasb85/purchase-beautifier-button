@@ -789,3 +789,8 @@ th.sortable.sort-desc::after { content: " ▼"; font-size: 8px; }
 .issue-resolution > strong { color: #2f855a; }
 .issue-resolution.pending { background: rgba(49, 130, 206, 0.10); }
 .issue-resolution.pending > strong { color: #2b6cb0; }
+
+/* Procurement modifications in RED & Feedback Alert */
+.procurement-cell-red { background: #fee2e2 !important; border: 1.5px solid #ef4444 !important; color: #b91c1c !important; font-weight: 800 !important; }
+.procurement-feedback-box { border-inline-start: 5px solid #dc2626 !important; }
+
