@@ -1554,12 +1554,47 @@
     var awaitingFinanceForecast = state.forecasts.filter(function (item) { return item.status === "finance_review"; }).length;
     if (awaitingFinanceForecast) steps.push({ number: 6, role: "finance", page: "forecasts", title: "Forecast بانتظار مراجعة المالية", copy: "نزّل Forecast وراجعه، ثم اعتمده لإرساله إلى المبيعات للتأكيد النهائي.", count: awaitingFinanceForecast });
     if (needsInitialRequirements) steps.push({ number: 6, role: "production", page: "rawRequirements", title: "حدد احتياجات المواد", copy: "تم تثبيت Forecast؛ ابدأ بملف المواد الأولية ثم ملف مواد التغليف في صفحتين منفصلتين.", count: needsInitialRequirements });
-    var unconfirmedCodesEarly = [];
+    var unconfirmedRawCodes = [];
+    var unconfirmedPackingCodes = [];
     state.materials.forEach(function (item) {
       var code = normalizeCode(item.materialCode);
-      if (!item.stockConfirmed && unconfirmedCodesEarly.indexOf(code) === -1) unconfirmedCodesEarly.push(code);
+      var category = (item.category || "raw") === "packing" ? "packing" : "raw";
+      if (!item.stockConfirmed) {
+        if (category === "packing") {
+          if (unconfirmedPackingCodes.indexOf(code) === -1) unconfirmedPackingCodes.push(code);
+        } else {
+          if (unconfirmedRawCodes.indexOf(code) === -1) unconfirmedRawCodes.push(code);
+        }
+      }
     });
-    if (unconfirmedCodesEarly.length) steps.push({ number: 5, role: "rmWarehouse", page: "rmStock", title: "ارفع رصيد المواد", copy: "مخزن المواد يدخل الموجود لديه ليحسب التطبيق النقص قبل رد الإنتاج.", count: unconfirmedCodesEarly.length });
+    if (unconfirmedRawCodes.length) {
+      steps.push({ number: 5, role: "rmWarehouse", page: "rmStock", title: "ارفع رصيد المواد الأولية", copy: "مستودع المواد الأولية يدخل الموجود لديه ليحسب التطبيق النقص قبل رد الإنتاج.", count: unconfirmedRawCodes.length });
+    }
+    if (unconfirmedPackingCodes.length) {
+      steps.push({ number: 5, role: "rmWarehouse", page: "packingStock", title: "ارفع رصيد مواد التغليف", copy: "مستودع مواد التغليف يدخل الموجود لديه ليحسب التطبيق النقص قبل رد الإنتاج.", count: unconfirmedPackingCodes.length });
+    }
+
+    // متابعة ملفات مراجعة المخزن
+    var rawReview = state.warehouseReviews && state.warehouseReviews.raw;
+    if (rawReview && rawReview.status === "returned_warehouse") {
+      steps.push({ number: 5, role: "rmWarehouse", page: "rmStock", title: "تأكيد ملف المواد الأولية", copy: "أعاد الإنتاج ملف المواد الأولية للتأكيد؛ راجعه وأكّده.", count: 1 });
+    }
+    var packingReview = state.warehouseReviews && state.warehouseReviews.packing;
+    if (packingReview && packingReview.status === "returned_warehouse") {
+      steps.push({ number: 5, role: "rmWarehouse", page: "packingStock", title: "تأكيد ملف مواد التغليف", copy: "أعاد الإنتاج ملف مواد التغليف للتأكيد؛ راجعه وأكّده.", count: 1 });
+    }
+    if (rawReview && rawReview.status === "sent_production") {
+      steps.push({ number: 7, role: "production", page: "rawRequirements", title: "راجع ملف المواد الأولية من المخزن", copy: "أرسل المخزن ملف المواد الأولية؛ راجعه أو أعِده للمخزن للتأكيد.", count: 1 });
+    }
+    if (packingReview && packingReview.status === "sent_production") {
+      steps.push({ number: 7, role: "production", page: "packingRequirements", title: "راجع ملف مواد التغليف من المخزن", copy: "أرسل المخزن ملف مواد التغليف؛ راجعه أو أعِده للمخزن للتأكيد.", count: 1 });
+    }
+    if (rawReview && rawReview.status === "confirmed") {
+      steps.push({ number: 7, role: "production", page: "rawRequirements", title: "حوّل ملف المواد الأولية للمشتريات", copy: "أكد المخزن ملف المواد الأولية؛ اضغط «تحويل للمشتريات».", count: 1 });
+    }
+    if (packingReview && packingReview.status === "confirmed") {
+      steps.push({ number: 7, role: "production", page: "packingRequirements", title: "حوّل ملف مواد التغليف للمشتريات", copy: "أكد المخزن ملف مواد التغليف؛ اضغط «تحويل للمشتريات».", count: 1 });
+    }
     var awaitingSupply = forecastsAwaitingSupplyConfirm().length;
     if (awaitingSupply) steps.push({ number: 6, role: "procurement", page: "requirements", title: "أكّد إمكانية التوريد", copy: "راجع النقص المحسوب مع مدد التوريد وأكّد قدرتك على التغطية قبل تثبيت المستند.", count: awaitingSupply });
     var weeklyTargets = pendingWeeklyPlanTargets().length;
@@ -1580,10 +1615,17 @@
       return (item.status === "submitted" || item.status === "confirmed") && item.financeApproval && item.financeApproval.status === "approved";
     }).length;
     if (awaitingOrders) steps.push({ number: 15, role: "procurement", page: "procurement", title: "أكّد الأوردر وابدأ التوريد", copy: "بعد موافقة المالية: نقرة واحدة تؤكد الأوردر وتحوله إلى In Transit.", count: awaitingOrders });
-    var readyReceipts = state.rawReceipts.filter(function (item) {
-      return item.status === "expected" && receiptReadyForWarehouse(item);
+    var readyRawReceipts = state.rawReceipts.filter(function (item) {
+      var master = rawMasterByCode(item.materialCode, "raw");
+      return (master ? master.category : "raw") !== "packing" && item.status === "expected" && receiptReadyForWarehouse(item);
     }).length;
-    if (readyReceipts) steps.push({ number: 16, role: "rmWarehouse", page: "receipts", title: "سجّل استلام المواد حسب الوصول", copy: "أدخل ما وصل فعليًا؛ يضاف مباشرة إلى الرصيد وأي متبقٍ يعود للمشتريات.", count: readyReceipts });
+    if (readyRawReceipts) steps.push({ number: 16, role: "rmWarehouse", page: "receipts", title: "سجّل استلام المواد الأولية حسب الوصول", copy: "أدخل ما وصل فعليًا؛ يضاف مباشرة إلى رصيد المواد الأولية.", count: readyRawReceipts });
+
+    var readyPackingReceipts = state.rawReceipts.filter(function (item) {
+      var master = rawMasterByCode(item.materialCode, "packing");
+      return (master ? master.category : "raw") === "packing" && item.status === "expected" && receiptReadyForWarehouse(item);
+    }).length;
+    if (readyPackingReceipts) steps.push({ number: 16, role: "rmWarehouse", page: "packingReceipts", title: "سجّل استلام مواد التغليف حسب الوصول", copy: "أدخل ما وصل فعليًا؛ يضاف مباشرة إلى رصيد مواد التغليف.", count: readyPackingReceipts });
     var productionEntries = pendingProductionEntries().length;
     if (productionEntries) steps.push({ number: 17, role: "production", page: "execution", title: "سجّل الإنتاج الفعلي", copy: "سجل إنتاج كل منتج في شهره؛ السحب من مخزن المواد يُخصم تلقائيًا.", count: productionEntries });
     var actualsAwaitingFg = state.actuals.filter(function (actual) {
